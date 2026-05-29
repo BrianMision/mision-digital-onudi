@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Misión Digital · Presentación para ONUDI · Cono Sur</title>
+<meta name="description" content="Misión Digital. Cómo nuestra forma de trabajar convierte el trabajo de campo en evidencia verificable. Para la Oficina Regional de ONUDI para el Cono Sur.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════════════════════════════════════
+   MISIÓN DIGITAL · ONUDI Cono Sur
+   Palette as argument: warm paper + soft ink for institutional dignity,
+   brass as the signature of the craft, brand cyan as the single hinge that
+   lights up only where our work and his mandate are the same idea.
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Base */
+  --paper:       #FBFAF7;
+  --paper-deep:  #F2EFE9;
+  --paper-card:  #FFFFFF;
+  --ink:         #1A1C1F;
+  --ink-body:    #3A3F45;
+  --ink-muted:   #6E747C;
+  --rule:        rgba(26, 28, 31, 0.12);
+  --rule-strong: rgba(26, 28, 31, 0.24);
+
+  /* Accent 1 — brass: the signature, the craft, the evidence */
+  --brass:       #C9A961;
+  --brass-deep:  #8C7440;
+  --brass-soft:  rgba(201, 169, 97, 0.14);
+
+  /* Accent 2 — Misión Digital brand cyan: the hinge, rationed */
+  --brand:       #2EA9E6;
+  --brand-deep:  #1E84C4;
+  --brand-soft:  rgba(46, 169, 230, 0.10);
+  --brand-glow:  rgba(46, 169, 230, 0.55);
+
+  /* Honesty / neutral */
+  --slate:       #5A6470;
+  --slate-soft:  rgba(90, 100, 112, 0.10);
+
+  --ease:        cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-deep:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:    cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+::selection { background: var(--brass-soft); color: var(--ink); }
+img { display: block; max-width: 100%; }
+
+/* ─── Warm ambient wash, barely there ─── */
+.bg-wash {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 78% 12%, rgba(201,169,97,0.05) 0%, transparent 60%),
+    radial-gradient(55% 50% at 12% 88%, rgba(46,169,230,0.04) 0%, transparent 60%);
+}
+.grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 60; opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   CHROME
+   ════════════════════════════════════════════════════════════════════════ */
+.chrome { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.progress {
+  position: absolute; top: 0; left: 0; height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--brass), var(--brand));
+  transition: width 800ms var(--ease-deep);
+}
+.wordmark {
+  position: absolute; top: 30px; left: 40px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-muted); font-weight: 500;
+}
+.wordmark b { color: var(--ink); font-weight: 500; }
+.counter {
+  position: absolute; top: 30px; right: 40px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: 0.18em; color: var(--ink-muted);
+}
+.counter .now { color: var(--brass-deep); }
+.dot-nav {
+  position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 11px; pointer-events: auto;
+}
+.dot-nav button {
+  width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0;
+  background: var(--rule-strong); cursor: pointer;
+  transition: all 380ms var(--ease);
+}
+.dot-nav button.active { background: var(--brass); transform: scale(1.55); box-shadow: 0 0 0 4px var(--brass-soft); }
+.dot-nav button:hover { background: var(--brand); }
+.slide.dark ~ .chrome .wordmark,
+.slide.dark ~ .chrome .wordmark b,
+.slide.dark ~ .chrome .counter { color: rgba(251,250,247,0.7); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SLIDE SKELETON
+   ════════════════════════════════════════════════════════════════════════ */
+.deck { scroll-snap-type: y proximity; height: 100vh; overflow-y: scroll; scroll-behavior: smooth; }
+.deck::-webkit-scrollbar { width: 0; }
+.slide {
+  position: relative; min-height: 100vh;
+  scroll-snap-align: start;
+  padding: 120px 9vw 96px;
+  display: flex; flex-direction: column; justify-content: center;
+  isolation: isolate;
+  content-visibility: auto; contain-intrinsic-size: 100vw 100vh;
+}
+.slide.cover, .slide.closing { justify-content: center; }
+.slide.cover { content-visibility: visible; }
+.slide-inner { width: 100%; max-width: 1080px; margin: 0 auto; }
+
+/* ─── Kicker (mono eyebrow) ─── */
+.kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--brass-deep); font-weight: 500;
+  display: flex; align-items: center; gap: 14px; margin-bottom: 34px;
+}
+.kicker::before { content: ""; width: 32px; height: 1px; background: var(--brass); }
+.kicker.brand { color: var(--brand-deep); }
+.kicker.brand::before { background: var(--brand); }
+
+/* ─── Display type ─── */
+.h1 {
+  font-family: "Fraunces", serif; font-weight: 400;
+  font-size: clamp(48px, 7vw, 116px); line-height: 0.98;
+  letter-spacing: -0.026em; color: var(--ink);
+  font-variation-settings: "opsz" 144, "SOFT" 40;
+  text-wrap: balance;
+}
+.h2 {
+  font-family: "Fraunces", serif; font-weight: 400;
+  font-size: clamp(34px, 4.6vw, 72px); line-height: 1.04;
+  letter-spacing: -0.02em; color: var(--ink);
+  font-variation-settings: "opsz" 96, "SOFT" 40;
+  text-wrap: balance; margin-bottom: 30px;
+}
+.h1 em, .h2 em {
+  font-style: italic; color: var(--brass-deep);
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+}
+.lead {
+  font-family: "Inter", sans-serif; font-weight: 400;
+  font-size: clamp(18px, 1.5vw, 23px); line-height: 1.6;
+  color: var(--ink-body); max-width: 56ch; letter-spacing: -0.008em;
+}
+.body { font-size: 18px; line-height: 1.68; color: var(--ink-body); max-width: 60ch; }
+.body em { font-style: italic; color: var(--ink); }
+
+/* ─── Mono micro-labels & data chips ─── */
+.mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.1em; color: var(--ink-muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.chip {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass-deep);
+  padding: 8px 16px; border: 1px solid var(--brass-soft); border-radius: 2px;
+  background: rgba(201,169,97,0.05);
+}
+.tagline { margin-top: 36px; font-family: "Fraunces", serif; font-style: italic; font-size: 16px; color: var(--ink-muted); font-variation-settings: "opsz" 24, "SOFT" 90; }
+
+/* ─── Honest aside (the candor blocks) ─── */
+.aside {
+  margin-top: 30px; padding: 18px 24px;
+  border-left: 2px solid var(--slate); background: var(--slate-soft);
+  border-radius: 0 3px 3px 0; max-width: 58ch;
+  font-size: 15.5px; line-height: 1.6; color: var(--ink-body);
+}
+.aside .lbl { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate); display: block; margin-bottom: 7px; }
+
+/* ─── Pull quote ─── */
+.pq { margin-top: 40px; max-width: 52ch; }
+.pq .q { font-family: "Fraunces", serif; font-style: italic; font-size: clamp(20px,1.9vw,27px); line-height: 1.4; color: var(--ink); font-variation-settings: "opsz" 60, "SOFT" 90; }
+.pq .by { margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-muted); display: flex; align-items: center; gap: 12px; }
+.pq .by::before { content: ""; width: 22px; height: 1px; background: var(--brass); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS
+   ════════════════════════════════════════════════════════════════════════ */
+.r-up   { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease), transform 1.1s var(--ease-deep); }
+.r-fade { opacity: 0; transition: opacity 1.2s var(--ease); }
+.r-line { opacity: 0; transform: translateY(14px); transition: opacity 0.8s var(--ease), transform 0.9s var(--ease-deep); }
+.slide.in .r-up, .slide.in .r-fade, .slide.in .r-line { opacity: 1; transform: none; }
+.slide.in [data-delay] { transition-delay: var(--d, 0s); }
+
+/* line-by-line masked headline */
+.mask-rows .row { display: block; overflow: hidden; }
+.mask-rows .row > span { display: inline-block; transform: translateY(110%); transition: transform 1s var(--ease-deep); }
+.slide.in .mask-rows .row > span { transform: translateY(0); }
+.slide.in .mask-rows .row:nth-child(2) > span { transition-delay: 0.09s; }
+.slide.in .mask-rows .row:nth-child(3) > span { transition-delay: 0.18s; }
+
+/* ─── Signature draw (brass) ─── */
+.sig-wrap { display: inline-block; position: relative; }
+.sig-path { stroke: var(--brass-deep); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 760; stroke-dashoffset: 760; transition: stroke-dashoffset 1.5s var(--ease-deep) 0.4s; }
+.slide.in .sig-path { stroke-dashoffset: 0; }
+
+/* ─── The data line motif (bookend) ─── */
+.data-line { position: absolute; left: 9vw; right: 9vw; bottom: 56px; height: 1px; }
+.data-line .track { position: absolute; inset: 0; background: var(--rule); }
+.data-line .lit {
+  position: absolute; left: 0; top: 0; height: 1px; width: 0;
+  background: linear-gradient(90deg, transparent, var(--brand) 30%, var(--brand-glow));
+  box-shadow: 0 0 8px var(--brand-glow);
+  transition: width 1.8s var(--ease-deep) 0.8s;
+}
+.slide.in .data-line.broken .lit { width: 62%; }
+.slide.in .data-line.whole .lit { width: 100%; transition-duration: 2.2s; }
+.data-line .node { position: absolute; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); opacity: 0; }
+.slide.in .data-line .node { opacity: 1; transition: opacity 0.5s ease 1.6s; }
+
+/* timestamp stamp chip */
+.stamp {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.06em;
+  color: var(--ink); background: var(--paper-card);
+  border: 1px solid var(--rule-strong); border-radius: 3px; padding: 8px 13px;
+  box-shadow: 0 8px 24px rgba(26,28,31,0.07);
+  opacity: 0; transform: scale(0.96); transform-origin: left center;
+  transition: opacity 0.4s ease 1.7s, transform 0.4s var(--ease-deep) 1.7s;
+}
+.slide.in .stamp { opacity: 1; transform: scale(1); }
+.stamp .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 7px var(--brand-glow); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   COVER + CLOSING (typographic bookend)
+   ════════════════════════════════════════════════════════════════════════ */
+.slide.cover, .slide.closing { background: var(--paper); }
+.cover-meta { margin-top: 44px; display: flex; flex-direction: column; gap: 7px; }
+.cover-for {
+  font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.12em;
+  color: var(--ink-muted); max-width: 60ch; line-height: 1.7;
+}
+.cover-for b { color: var(--ink); font-weight: 500; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   COMPONENTS
+   ════════════════════════════════════════════════════════════════════════ */
+/* Definition cards (slide 3) */
+.def-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 12px; }
+.def-card {
+  background: var(--paper-card); border: 1px solid var(--rule);
+  border-top: 2px solid var(--brass); padding: 26px 24px 28px; border-radius: 3px;
+  display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 30px rgba(26,28,31,0.04);
+}
+.def-card.ods { border-top-color: var(--brand); }
+.def-card .dt { font-family: "Fraunces", serif; font-size: 22px; color: var(--ink); font-variation-settings: "opsz" 48, "SOFT" 40; }
+.def-card.ods .dt { color: var(--brand-deep); }
+.def-card .dd { font-size: 14.5px; line-height: 1.55; color: var(--ink-body); }
+.def-card .src { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rule); }
+.def-foot { margin-top: 30px; font-family: "Fraunces", serif; font-style: italic; font-size: clamp(18px,1.7vw,24px); color: var(--ink); font-variation-settings: "opsz" 48, "SOFT" 90; text-align: center; }
+.def-foot b { color: var(--brand-deep); font-style: normal; font-weight: 500; }
+
+/* Diptych (slide 4) */
+.dip { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 14px; align-items: stretch; }
+.dip .pane { border: 1px solid var(--rule); border-radius: 3px; padding: 26px; background: var(--paper-card); display: flex; flex-direction: column; gap: 16px; min-height: 230px; }
+.dip .pane.paper { background: repeating-linear-gradient(0deg, #fcfbf8, #fcfbf8 27px, #f0ede5 28px); position: relative; }
+.dip .pane .pane-lbl { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-muted); }
+.dip .pane.paper .scribble { font-family: "Fraunces", serif; font-style: italic; color: var(--slate); font-size: 17px; line-height: 1.8; text-decoration: line-through; text-decoration-color: rgba(199,60,28,0.5); }
+.dip .pane.digital { border-top: 2px solid var(--brand); }
+.dip .pane.digital .rec-row { display: flex; align-items: center; gap: 12px; font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink); padding: 9px 0; border-bottom: 1px solid var(--rule); }
+.dip .pane.digital .rec-row .tick { color: var(--brand); }
+.dip .foot-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 14px; }
+.dip-foot { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--ink-muted); }
+.dip-foot.ok { color: var(--brand-deep); }
+
+/* Two-part system (slide 7) */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 10px; }
+.two .panel { border: 1px solid var(--rule); border-radius: 3px; padding: 28px; background: var(--paper-card); }
+.two .panel h4 { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass-deep); margin-bottom: 14px; }
+.two .panel .pt { font-family: "Fraunces", serif; font-size: 20px; color: var(--ink); margin-bottom: 12px; font-variation-settings: "opsz" 36; }
+.two .panel .pd { font-size: 15px; line-height: 1.55; color: var(--ink-body); }
+.two .panel .pl { margin-top: 16px; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.04em; color: var(--ink-muted); padding-top: 12px; border-top: 1px solid var(--rule); }
+.two-mid { text-align: center; margin-top: 26px; font-family: "Fraunces", serif; font-style: italic; font-size: clamp(18px,1.7vw,24px); color: var(--ink); font-variation-settings: "opsz" 48, "SOFT" 90; }
+
+/* Columns (slide 6) */
+.cols3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 30px; margin-top: 10px; }
+.col h4 { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--brass-deep); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.col li { font-size: 15.5px; color: var(--ink-body); display: flex; gap: 10px; }
+.col li::before { content: ""; flex: 0 0 auto; width: 5px; height: 5px; border-radius: 50%; background: var(--brass); margin-top: 9px; }
+.col li .yr { font-family: "IBM Plex Mono", monospace; color: var(--ink-muted); font-size: 12px; }
+.col.portfolio li::before { background: var(--brand); }
+
+/* ─── The 8 tabs (slide 9) ─── */
+.tabs { margin-top: 14px; }
+.tab-phases { display: flex; gap: 8px; margin-bottom: 14px; }
+.tab-phase { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-muted); padding: 5px 12px; border: 1px solid var(--rule); border-radius: 999px; }
+.tab-strip { display: grid; grid-template-columns: repeat(8, 1fr); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper-card); }
+.tab { padding: 18px 12px; border-right: 1px solid var(--rule); cursor: pointer; transition: background 300ms var(--ease); position: relative; }
+.tab:last-child { border-right: none; }
+.tab:hover, .tab.active { background: var(--brass-soft); }
+.tab .rn { font-family: "Fraunces", serif; font-style: italic; font-size: 22px; color: var(--ink-muted); transition: color 300ms; font-variation-settings: "opsz" 36, "SOFT" 80; }
+.tab:hover .rn, .tab.active .rn { color: var(--brass-deep); }
+.tab .tn { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); margin-top: 8px; line-height: 1.3; }
+.tab.measure .rn { color: var(--brand); }
+.tab .pip { position: absolute; bottom: 8px; left: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); opacity: 0; }
+.tab.measure .pip { opacity: 1; }
+.tab-panel {
+  margin-top: 0; overflow: hidden; max-height: 0;
+  transition: max-height 400ms var(--ease-deep);
+  border: 1px solid transparent;
+}
+.tab-panel.open { max-height: 260px; margin-top: 14px; border-color: var(--rule); border-radius: 4px; background: var(--paper-card); }
+.tab-panel .tp-inner { padding: 24px 26px; }
+.tab-panel .tp-title { font-family: "Fraunces", serif; font-size: 22px; color: var(--ink); margin-bottom: 10px; }
+.tab-panel .tp-body { font-size: 15px; color: var(--ink-body); line-height: 1.6; max-width: 64ch; }
+.tab-panel .tp-sample { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--brass-deep); margin-top: 14px; }
+.tab-foot { margin-top: 18px; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-muted); display: flex; align-items: center; gap: 10px; }
+.tab-foot::before { content: ""; width: 18px; height: 1px; background: var(--brass); }
+
+/* ─── Zoom out (slide 10) ─── */
+.zoom-field { margin-top: 26px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; max-width: 720px; }
+.zoom-cell { aspect-ratio: 1.4; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper-card); opacity: 0; transform: scale(0.6); }
+.slide.in .zoom-cell { opacity: 1; transform: scale(1); transition: opacity 0.5s ease, transform 0.6s var(--ease-deep); }
+.zoom-cell.hero { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand), 0 8px 22px var(--brand-soft); position: relative; }
+.zoom-cell.hero::after { content: "J. Suárez"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace; font-size: 7px; color: var(--brand-deep); }
+
+/* ─── Three voices (slide 11) ─── */
+.voices { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 16px; }
+.voice { border: 1px solid var(--rule); border-radius: 3px; padding: 24px; background: var(--paper-card); text-align: center; }
+.voice .vn { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); margin-bottom: 10px; }
+.voice .vd { font-size: 14px; color: var(--ink-body); line-height: 1.5; }
+.voice.gov { border-top: 2px solid var(--brand); cursor: pointer; }
+.voice.gov .vn { color: var(--brand-deep); }
+.voice.gov .cycle { margin-top: 12px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--brand-deep); border: 1px dashed var(--brand); border-radius: 999px; padding: 5px 12px; display: inline-block; }
+
+/* ─── 60% (slide 12) ─── */
+.big-num { font-family: "Fraunces", serif; font-weight: 400; font-size: clamp(120px, 20vw, 280px); line-height: 0.86; color: var(--brass-deep); font-variation-settings: "opsz" 144, "SOFT" 30; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.big-sub { font-family: "IBM Plex Mono", monospace; font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-muted); margin-top: 6px; }
+
+/* ─── Cartera (slide 13) ─── */
+.cartera { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 14px; }
+.cart { border: 1px solid var(--rule); border-radius: 3px; padding: 24px; background: var(--paper-card); position: relative; display: flex; flex-direction: column; gap: 12px; }
+.cart .cl { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-deep); }
+.cart .cb { font-size: 15px; line-height: 1.55; color: var(--ink-body); }
+.cart .clink { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-muted); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rule); }
+.cart .clink b { color: var(--brass-deep); font-weight: 500; }
+.ribbon { position: absolute; top: 16px; right: -1px; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; background: var(--brass); color: #fff; padding: 4px 10px; border-radius: 2px 0 0 2px; }
+
+/* ─── Landscape (slide 14) ─── */
+.landscape { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px 40px; margin-top: 18px; }
+.land { display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid var(--rule); }
+.land .ln { font-family: "Fraunces", serif; font-style: italic; font-size: 26px; color: var(--brand); font-variation-settings: "opsz" 48, "SOFT" 100; line-height: 1; }
+.land .lt { font-family: "Inter", sans-serif; font-weight: 500; font-size: 15px; color: var(--ink); margin-bottom: 5px; }
+.land .lb { font-size: 14px; color: var(--ink-body); line-height: 1.5; }
+
+/* ─── Balance / limits (slide 15) ─── */
+.scale { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 16px; }
+.pan { border: 1px solid var(--rule); border-radius: 3px; padding: 26px; }
+.pan.is { border-top: 2px solid var(--slate); }
+.pan.isnot { border-top: 2px solid var(--slate); }
+.pan h4 { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate); margin-bottom: 16px; }
+.pan ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.pan li { font-size: 15px; line-height: 1.5; color: var(--ink-body); display: flex; gap: 10px; }
+.pan li::before { content: ""; flex: 0 0 auto; width: 5px; height: 5px; border-radius: 50%; background: var(--slate); margin-top: 9px; }
+.scale-close { margin-top: 28px; text-align: center; font-family: "Fraunces", serif; font-style: italic; font-size: clamp(17px,1.6vw,22px); color: var(--ink); font-variation-settings: "opsz" 48, "SOFT" 90; }
+
+/* ─── Bridge (slide 16) ─── */
+.bridge { margin-top: 18px; display: flex; flex-direction: column; gap: 0; }
+.brow { display: grid; grid-template-columns: 1fr 64px 1fr; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.brow:first-child { border-top: 1px solid var(--rule); }
+.brow .bl { text-align: right; font-size: 15.5px; color: var(--ink); }
+.brow .br { text-align: left; font-size: 15.5px; color: var(--ink-body); }
+.brow .bc { display: flex; align-items: center; justify-content: center; }
+.brow .bc svg { width: 64px; height: 14px; }
+.brow .bc path { stroke: var(--brand); stroke-width: 1.4; fill: none; stroke-dasharray: 64; stroke-dashoffset: 64; transition: stroke-dashoffset 0.7s var(--ease-deep); }
+.slide.in .brow .bc path { stroke-dashoffset: 0; }
+.bridge-foot { margin-top: 24px; text-align: center; font-family: "Fraunces", serif; font-style: italic; font-size: clamp(17px,1.6vw,22px); color: var(--ink); font-variation-settings: "opsz" 48, "SOFT" 90; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+  .slide { padding: 96px 7vw 72px; }
+  .def-grid, .cols3, .voices, .cartera, .two, .dip, .scale, .landscape { grid-template-columns: 1fr; }
+  .tab-strip { grid-template-columns: repeat(4, 1fr); }
+  .zoom-field { grid-template-columns: repeat(8,1fr); }
+  .brow { grid-template-columns: 1fr 40px 1fr; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .r-up, .r-fade, .r-line { opacity: 1 !important; transform: none !important; }
+  .mask-rows .row > span { transform: none !important; }
+  .sig-path { stroke-dashoffset: 0 !important; }
+  .data-line .lit { width: 100% !important; }
+  .zoom-cell { opacity: 1 !important; transform: none !important; }
+  .stamp { opacity: 1 !important; transform: none !important; }
+  .brow .bc path { stroke-dashoffset: 0 !important; }
+}
+
+/* Print fallback */
+@media print {
+  .chrome, .grain, .bg-wash { display: none; }
+  .slide { min-height: auto; page-break-after: always; padding: 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-wash"></div>
+<div class="grain"></div>
+
+<main class="deck" id="deck">
+
+<!-- ═══════════════ 1 · PORTADA ═══════════════ -->
+<section class="slide cover" id="s1" data-label="Portada">
+  <div class="slide-inner">
+    <div class="kicker r-fade">Presentación para ONUDI · Oficina Regional Cono Sur · Montevideo</div>
+    <h1 class="h1 mask-rows">
+      <span class="row"><span>La sostenibilidad industrial</span></span>
+      <span class="row"><span>empieza con una
+        <span class="sig-wrap"><em>firma</em>
+          <svg width="180" height="40" viewBox="0 0 180 40" aria-hidden="true" style="position:absolute;left:0;bottom:-6px;overflow:visible">
+            <path class="sig-path" d="M4 28 C 22 6, 34 6, 40 22 S 56 38, 66 20 S 84 4, 96 22 C 104 34, 118 34, 132 18 S 158 10, 176 22"/>
+          </svg>
+        </span>.
+      </span></span>
+    </h1>
+    <p class="lead r-up" data-delay style="--d:0.5s; margin-top:34px;">Cómo nuestra forma de trabajar convierte el trabajo de campo en evidencia verificable.</p>
+    <div class="cover-meta r-fade" data-delay style="--d:0.8s;">
+      <div class="cover-for">Para <b>Manuel Albaladejo</b>, Representante de ONUDI para Argentina, Chile, Paraguay y Uruguay.</div>
+      <div class="cover-for" style="margin-top:10px;">Misión Digital · <b>Creamos tu futuro</b> · Montevideo, 2026</div>
+    </div>
+  </div>
+  <div class="data-line broken"><div class="track"></div><div class="lit"></div></div>
+</section>
+
+<!-- ═══════════════ 2 · PROPÓSITO ═══════════════ -->
+<section class="slide" id="s2" data-label="El Propósito">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Propósito</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">No venimos a vender un sistema. Venimos a mostrar una <em>forma de trabajar</em>.</h2>
+    <p class="lead r-up" data-delay style="--d:0.25s;">Somos una empresa uruguaya. Convertimos procesos industriales de papel en flujos digitales firmados, con hora, técnico y trazabilidad completa.</p>
+    <div style="margin-top:32px; display:flex; flex-direction:column; gap:10px;">
+      <div class="mono r-line" data-delay style="--d:0.4s;">No es una demostración comercial.</div>
+      <div class="mono r-line" data-delay style="--d:0.55s;">Es una conversación entre pares.</div>
+      <div class="mono r-line" data-delay style="--d:0.7s;">Sobre cómo el dato verificable sirve a su mandato.</div>
+    </div>
+    <div class="pq r-fade" data-delay style="--d:0.95s; align-self:flex-end;">
+      <div class="q">"No es filantropía, sino una nueva forma de concebir la actividad productiva."</div>
+      <div class="by">M. Albaladejo · País Circular · 2024</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3 · SU MANDATO ═══════════════ -->
+<section class="slide" id="s3" data-label="Su Mandato">
+  <div class="slide-inner">
+    <div class="kicker brand r-up">Su Mandato</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Desarrollo Industrial Inclusivo y Sostenible.</h2>
+    <div class="def-grid">
+      <div class="def-card r-up" data-delay style="--d:0.25s;">
+        <div class="dt">ISID</div>
+        <div class="dd">Que nadie quede atrás y que el progreso ocurra dentro de un marco ambientalmente sostenible.</div>
+        <div class="src">Declaración de Lima · 2013</div>
+      </div>
+      <div class="def-card ods r-up" data-delay style="--d:0.4s;">
+        <div class="dt">ODS 9</div>
+        <div class="dd">Infraestructura resiliente, industrialización inclusiva y sostenible, e innovación.</div>
+        <div class="src">ONUDI · agencia custodia de 6 indicadores industriales</div>
+      </div>
+      <div class="def-card r-up" data-delay style="--d:0.55s;">
+        <div class="dt">Economía circular</div>
+        <div class="dd">Una nueva forma de crear valor, extendiendo la vida útil y llevando los residuos del final al principio de la cadena.</div>
+        <div class="src">Definición ONUDI</div>
+      </div>
+    </div>
+    <div class="def-foot r-fade" data-delay style="--d:0.8s;">Y todo esto descansa sobre una sola condición: <b>datos verificables</b>.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 4 · EL OBSTÁCULO ═══════════════ -->
+<section class="slide" id="s4" data-label="El Obstáculo">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Obstáculo</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Lo que no se puede trazar, no se puede <em>verificar</em>. Lo que no se verifica, no cuenta.</h2>
+    <p class="body r-up" data-delay style="--d:0.25s;">Las PyMEs que sus programas quieren ayudar a transicionar siguen trabajando en papel. Cada planilla manual es un dato que se pierde, una hora que se transcribe dos veces, un cierre que nadie puede auditar.</p>
+    <div class="dip">
+      <div class="pane paper r-up" data-delay style="--d:0.4s;">
+        <div class="pane-lbl">Hoy · en papel</div>
+        <div class="scribble">Mantenimiento cámara 3<br>cambio de filtro<br>turno tarde</div>
+      </div>
+      <div class="pane digital r-up" data-delay style="--d:0.55s;">
+        <div class="pane-lbl">Con XPRNZ · sellado</div>
+        <div class="rec-row"><span class="tick">✓</span> Mantenimiento · cámara 3</div>
+        <div class="rec-row"><span class="tick">✓</span> Filtro reemplazado</div>
+        <div class="stamp" style="margin-top:8px;"><span class="dot"></span> 14:02 · J. Suárez · OT-2026-0418</div>
+      </div>
+    </div>
+    <div class="dip foot-pair">
+      <div class="dip-foot r-fade" data-delay style="--d:0.7s;">sin hora, sin firma, sin trazabilidad</div>
+      <div class="dip-foot ok r-fade" data-delay style="--d:0.8s;">hora, técnico y firma, en el mismo acto</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 5 · QUÉ ES MISIÓN DIGITAL ═══════════════ -->
+<section class="slide" id="s5" data-label="Qué es Misión Digital">
+  <div class="slide-inner">
+    <div class="kicker r-up">Qué es Misión Digital</div>
+    <h1 class="h1 r-up" data-delay style="--d:0.1s; font-size:clamp(44px,6vw,96px);">La capa de datos<br>que faltaba.</h1>
+    <p class="lead r-up" data-delay style="--d:0.3s; margin-top:30px;">XPRNZ no es una app de servicio técnico. Es el motor que convierte cada acción de campo en un registro con hora, técnico y firma. Imposible de repetir, posible de auditar.</p>
+    <div class="aside r-fade" data-delay style="--d:0.5s;">
+      <span class="lbl">Dicho con claridad</span>
+      No medimos las toneladas de CO2 ni los kilovatios. Capturamos y trazamos el dato que los vuelve verificables.
+    </div>
+    <div class="chips">
+      <span class="chip r-up" data-delay style="--d:0.6s;">Trazabilidad</span>
+      <span class="chip r-up" data-delay style="--d:0.68s;">Atribución</span>
+      <span class="chip r-up" data-delay style="--d:0.76s;">Auditabilidad</span>
+    </div>
+    <div class="tagline r-fade" data-delay style="--d:0.9s;">1 App, el mundo en tus manos.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 6 · PERFIL ═══════════════ -->
+<section class="slide" id="s6" data-label="Quiénes Somos">
+  <div class="slide-inner">
+    <div class="kicker r-up">Quiénes Somos</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Una empresa con raíces en tres países y los pies en <em>Uruguay</em>.</h2>
+    <div class="cols3">
+      <div class="col r-up" data-delay style="--d:0.25s;">
+        <h4>Geografía</h4>
+        <ul>
+          <li>Países Bajos <span class="yr">2018</span></li>
+          <li>Bélgica <span class="yr">2023</span></li>
+          <li>Uruguay <span class="yr">2025</span></li>
+        </ul>
+      </div>
+      <div class="col r-up" data-delay style="--d:0.4s;">
+        <h4>Industrias actuales</h4>
+        <ul>
+          <li>Climatización</li>
+          <li>Calefacción central</li>
+          <li>Norma de CO</li>
+          <li>Ventilación</li>
+          <li>Tratamiento de agua</li>
+        </ul>
+      </div>
+      <div class="col portfolio r-up" data-delay style="--d:0.55s;">
+        <h4>Industrias en expansión</h4>
+        <ul>
+          <li>Frigoríficos</li>
+          <li>Agroindustria</li>
+          <li>Automotriz</li>
+          <li>Transporte</li>
+          <li>Salud</li>
+        </ul>
+      </div>
+    </div>
+    <div class="aside r-fade" data-delay style="--d:0.75s;">Algunas de estas industrias son hoja de ruta, no producto entregado. Lo decimos claro.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 7 · SISTEMA DOS PARTES ═══════════════ -->
+<section class="slide" id="s7" data-label="El Sistema">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Sistema</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Dos partes. Un solo dato.</h2>
+    <div class="two">
+      <div class="panel r-up" data-delay style="--d:0.25s;">
+        <h4>Oficina · web</h4>
+        <div class="pt">Gestión de datos, equipos y analítica de trabajos.</div>
+        <div class="pd">Donde el registro crudo del campo se vuelve un tablero legible.</div>
+        <div class="pl">La capa que leería un asesor de producción más limpia.</div>
+      </div>
+      <div class="panel r-up" data-delay style="--d:0.4s;">
+        <h4>Campo · app móvil</h4>
+        <div class="pt">Checklists digitales y órdenes en la mano del técnico.</div>
+        <div class="pd">El primer escalón de la Industria 4.0 para una PyME que todavía vive en papel.</div>
+        <div class="pl">La rampa de entrada, no el ERP completo.</div>
+      </div>
+    </div>
+    <div class="two-mid r-fade" data-delay style="--d:0.6s;">Lo que se captura en el campo, se gobierna en la oficina.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 8 · LA OFICINA ═══════════════ -->
+<section class="slide" id="s8" data-label="La Oficina">
+  <div class="slide-inner">
+    <div class="kicker r-up">La Oficina</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">De miles de registros a un <em>indicador</em>.</h2>
+    <p class="body r-up" data-delay style="--d:0.25s;">La misma acción firmada, multiplicada y agregada, se vuelve un tablero: tiempos, cumplimiento, intervenciones por planta, por equipo, por período.</p>
+    <div class="aside r-fade" data-delay style="--d:0.45s;">
+      <span class="lbl">El puente al MRV</span>
+      Si entre esos campos vive un dato ambiental (consumo, residuo, material recuperado), el tablero lo agrega igual. La arquitectura no distingue: agrega lo que se le pida medir.
+    </div>
+    <div class="chips">
+      <span class="chip r-up" data-delay style="--d:0.6s;">CSV</span>
+      <span class="chip r-up" data-delay style="--d:0.66s;">JSON</span>
+      <span class="chip r-up" data-delay style="--d:0.72s;">API</span>
+    </div>
+    <div class="tab-foot r-fade" data-delay style="--d:0.85s;">dato estructurado, no PDF cerrado</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 9 · LAS OCHO PESTAÑAS ═══════════════ -->
+<section class="slide" id="s9" data-label="El Campo · La Prueba">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Campo · La Prueba</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Una orden de trabajo. Ocho pestañas. Cada acción, sellada.</h2>
+    <div class="tabs r-up" data-delay style="--d:0.25s;">
+      <div class="tab-phases">
+        <span class="tab-phase">Identificar · I a IV</span>
+        <span class="tab-phase">Medir · V a VI</span>
+        <span class="tab-phase">Cerrar · VII a VIII</span>
+      </div>
+      <div class="tab-strip" id="tabStrip">
+        <div class="tab" data-t="1"><div class="rn">I</div><div class="tn">Cliente</div></div>
+        <div class="tab" data-t="2"><div class="rn">II</div><div class="tn">Orden de Trabajo</div></div>
+        <div class="tab" data-t="3"><div class="rn">III</div><div class="tn">Instalación</div></div>
+        <div class="tab" data-t="4"><div class="rn">IV</div><div class="tn">Documentación</div></div>
+        <div class="tab measure" data-t="5"><div class="rn">V</div><div class="tn">Medidas</div><span class="pip"></span></div>
+        <div class="tab" data-t="6"><div class="rn">VI</div><div class="tn">Verificación</div></div>
+        <div class="tab" data-t="7"><div class="rn">VII</div><div class="tn">Intervenciones</div></div>
+        <div class="tab" data-t="8"><div class="rn">VIII</div><div class="tn">Firma</div></div>
+      </div>
+      <div class="tab-panel" id="tabPanel"><div class="tp-inner">
+        <div class="tp-title" id="tpTitle">Medidas</div>
+        <div class="tp-body" id="tpBody">Acá viven los números. Y acá entrarían sus indicadores: consumo, masa de residuo, contenido reciclado, lectura de emisión. La misma ranura que hoy guarda una medición HVAC admite una medición de circularidad.</div>
+        <div class="tp-sample" id="tpSample">campo configurable · cursor editable</div>
+      </div></div>
+      <div class="tab-foot r-fade" data-delay style="--d:0.5s;">Cada acción lleva hora, técnico y firma. Nada se puede inventar después.</div>
+    </div>
+    <div class="aside r-fade" data-delay style="--d:0.7s;">Hoy capturan cumplimiento HVAC y norma de CO. La misma mecánica admite indicadores de circularidad. Es arquitectura adaptable, no funcionalidad ya entregada.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 10 · EL ZOOM OUT ═══════════════ -->
+<section class="slide" id="s10" data-label="El Zoom Out">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Zoom Out</div>
+    <h1 class="h1 r-up" data-delay style="--d:0.1s; font-size:clamp(40px,5.4vw,84px);">De una firma a un <em>sistema de verificación</em>.</h1>
+    <p class="body r-up" data-delay style="--d:0.3s; margin-top:24px;">Una orden firmada es una evidencia. Mil órdenes firmadas son una cadena de custodia. Cien PyMEs con cadena de custodia son una base de datos auditable para todo un sector.</p>
+    <div class="zoom-field" id="zoomField"></div>
+    <div class="aside r-fade" data-delay style="--d:0.7s;">
+      <span class="lbl">En su lenguaje</span>
+      Es exactamente lo que ONUDI llama un sistema de MRV: no se puede verificar lo que no se puede atribuir a quién lo hizo, y cuándo. Nosotros damos la procedencia verificable. El indicador ambiental lo define el programa.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 11 · TRES VOCES ═══════════════ -->
+<section class="slide" id="s11" data-label="A Tres Voces">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Sello a Tres Voces</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">El mismo registro, sincronizado a tres <em>destinatarios</em>.</h2>
+    <div class="voices">
+      <div class="voice r-up" data-delay style="--d:0.25s;"><div class="vn">Cliente</div><div class="vd">Recibe la evidencia de lo que se hizo.</div></div>
+      <div class="voice r-up" data-delay style="--d:0.4s;"><div class="vn">Empresa</div><div class="vd">Conserva el historial auditable.</div></div>
+      <div class="voice gov r-up" data-delay style="--d:0.55s;" id="govNode"><div class="vn">Gobierno · regulador</div><div class="vd">Recibe el cumplimiento sin fricción de reporte.</div><span class="cycle" id="govCycle">Norma CO · Bélgica, hoy</span></div>
+    </div>
+    <p class="body r-up" data-delay style="--d:0.7s; margin-top:26px; max-width:64ch;">Lo que mata el cumplimiento en la PyME es la fricción de reportar. Si el reporte sale del mismo acto de trabajo, la fricción desaparece. La arquitectura es la misma: puede sincronizar al registro MRV o al organismo que el programa designe.</p>
+    <div class="aside r-fade" data-delay style="--d:0.85s;">Configurable, no preintegrado con ONUDI. Lo decimos con claridad.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 12 · 60% ═══════════════ -->
+<section class="slide" id="s12" data-label="El Incentivo">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="kicker r-up" style="justify-content:center;">El Incentivo</div>
+    <div class="big-num r-fade" data-delay style="--d:0.15s;" id="bigNum">60%</div>
+    <div class="big-sub r-up" data-delay style="--d:0.4s;">menos tiempo administrativo</div>
+    <p class="body r-up" data-delay style="--d:0.55s; margin:26px auto 0; text-align:center;">Eliminar la transcripción manual y el reproceso devuelve más de la mitad del tiempo de cierre de una orden.</p>
+    <div class="aside r-fade" data-delay style="--d:0.7s; margin-left:auto; margin-right:auto; text-align:left;">
+      <span class="lbl">Honestamente</span>
+      No es una tonelada de CO2 evitada. Es competitividad de PyME y trabajo humano mejor usado, lo que ONUDI llama eficiencia productiva dentro de la RECP. Y es la zanahoria: la PyME adopta por el tiempo que gana. El dato de sostenibilidad viene de regalo.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 13 · PARA SU CARTERA ═══════════════ -->
+<section class="slide" id="s13" data-label="Para Su Cartera">
+  <div class="slide-inner">
+    <div class="kicker brand r-up">Para Su Cartera</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">El mismo motor que traza una orden, traza un <em>circuito circular</em>.</h2>
+    <div class="cartera">
+      <div class="cart r-up" data-delay style="--d:0.25s;">
+        <span class="ribbon">Hoja de ruta</span>
+        <div class="cl">Frigorífico · agroindustria</div>
+        <div class="cb">Cada lote de subproducto valorizado, trazado del residuo al recurso.</div>
+        <div class="clink">valorización de residuos tipo <b>BIOVALOR</b></div>
+      </div>
+      <div class="cart r-up" data-delay style="--d:0.4s;">
+        <span class="ribbon">Hoja de ruta</span>
+        <div class="cl">Economía circular</div>
+        <div class="cb">La pestaña Medidas captura material recuperado y porcentaje de contenido reciclado.</div>
+        <div class="clink">insumo para las hojas de ruta circulares de Uruguay y Chile</div>
+      </div>
+      <div class="cart r-up" data-delay style="--d:0.55s;">
+        <span class="ribbon">Hoja de ruta</span>
+        <div class="cl">Transición energética</div>
+        <div class="cb">Mantenimiento e intervenciones trazadas sobre activos financiados por instrumentos del sector.</div>
+        <div class="clink">activos tipo <b>REIF</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 14 · EL PAISAJE ═══════════════ -->
+<section class="slide" id="s14" data-label="El Paisaje">
+  <div class="slide-inner">
+    <div class="kicker r-up">El Paisaje</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Dónde vive esta clase de capacidad.</h2>
+    <div class="landscape">
+      <div class="land r-up" data-delay style="--d:0.25s;"><div class="ln">01</div><div><div class="lt">Digitalización de PyMEs</div><div class="lb">Una herramienta de entrada para empresas que aún no están listas para un ERP o una Industria 4.0 completa.</div></div></div>
+      <div class="land r-up" data-delay style="--d:0.38s;"><div class="ln">02</div><div><div class="lt">Economía circular nacional</div><div class="lb">Una capa de trazabilidad para los flujos prioritarios: biomasa, agua, movilidad.</div></div></div>
+      <div class="land r-up" data-delay style="--d:0.51s;"><div class="ln">03</div><div><div class="lt">Lectura MRV y ODS 9</div><div class="lb">Una fuente de dato a nivel empresa que podría agregar hacia las estadísticas del ODS 9.</div></div></div>
+      <div class="land r-up" data-delay style="--d:0.64s;"><div class="ln">04</div><div><div class="lt">Cumplimiento regulatorio</div><div class="lb">El reporte que nace del propio acto de trabajo, en lugar de transcribirse después.</div></div></div>
+    </div>
+    <div class="tab-foot r-fade" data-delay style="--d:0.85s;">Lo mostramos como panorama, no como propuesta.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 15 · DÓNDE SOMOS PRECISOS ═══════════════ -->
+<section class="slide" id="s15" data-label="Dónde Somos Precisos">
+  <div class="slide-inner">
+    <div class="kicker r-up" style="color:var(--slate);">Dónde Somos Precisos</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Lo que <em style="color:var(--slate);">no</em> somos.</h2>
+    <div class="scale">
+      <div class="pan is r-up" data-delay style="--d:0.25s;">
+        <h4>Lo que sí somos</h4>
+        <ul>
+          <li>Capa de captura y enrutamiento de dato verificado</li>
+          <li>Trazabilidad sellada a nivel empresa</li>
+          <li>Rampa de digitalización para PyMEs</li>
+          <li>Arquitectura configurable y adaptable por vertical</li>
+        </ul>
+      </div>
+      <div class="pan isnot r-up" data-delay style="--d:0.4s;">
+        <h4>Lo que no somos</h4>
+        <ul>
+          <li>No medimos por sí solos toneladas, kilovatios ni porcentajes: esos campos se configuran</li>
+          <li>No somos un instrumento de política nacional, somos infraestructura habilitante</li>
+          <li>No somos un libro mayor de cadena de valor, somos la fuente que podría alimentar un Pasaporte Digital de Producto</li>
+          <li>La sincronización al regulador es configurable, no preintegrada con ONUDI</li>
+        </ul>
+      </div>
+    </div>
+    <div class="scale-close r-fade" data-delay style="--d:0.7s;">Una institución como la suya recomienda herramientas que conoce con precisión.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 16 · EL PUENTE ═══════════════ -->
+<section class="slide" id="s16" data-label="El Puente">
+  <div class="slide-inner">
+    <div class="kicker brand r-up">El Puente</div>
+    <h2 class="h2 r-up" data-delay style="--d:0.1s;">Su lenguaje, nuestra forma de trabajar.</h2>
+    <div class="bridge">
+      <div class="brow r-line" data-delay style="--d:0.25s;"><div class="bl">Papel a digital en PyMEs</div><div class="bc"><svg viewBox="0 0 64 14"><path d="M2 7 H62"/></svg></div><div class="br">primer escalón de la Industria 4.0</div></div>
+      <div class="brow r-line" data-delay style="--d:0.38s;"><div class="bl">Sistema de MRV</div><div class="bc"><svg viewBox="0 0 64 14"><path d="M2 7 H62"/></svg></div><div class="br">cadena de custodia firmada y atribuida</div></div>
+      <div class="brow r-line" data-delay style="--d:0.51s;"><div class="bl">Integridad del dato</div><div class="bc"><svg viewBox="0 0 64 14"><path d="M2 7 H62"/></svg></div><div class="br">registro inviolable, insumo de un Pasaporte Digital de Producto</div></div>
+      <div class="brow r-line" data-delay style="--d:0.64s;"><div class="bl">Competitividad de PyME · RECP</div><div class="bc"><svg viewBox="0 0 64 14"><path d="M2 7 H62"/></svg></div><div class="br">60% menos tiempo, mejor uso del trabajo humano</div></div>
+      <div class="brow r-line" data-delay style="--d:0.77s;"><div class="bl">Hojas de ruta circulares</div><div class="bc"><svg viewBox="0 0 64 14"><path d="M2 7 H62"/></svg></div><div class="br">la pestaña Medidas como ranura de indicadores</div></div>
+    </div>
+    <div class="bridge-foot r-fade" data-delay style="--d:1s;">No es coincidencia. Es la misma idea, desde dos lados.</div>
+  </div>
+</section>
+
+<!-- ═══════════════ 17 · EL CIERRE ═══════════════ -->
+<section class="slide closing" id="s17" data-label="El Cierre">
+  <div class="slide-inner">
+    <h1 class="h1 mask-rows">
+      <span class="row"><span>Empezó con una firma.</span></span>
+      <span class="row"><span>Puede terminar en un <em>sistema</em>.</span></span>
+    </h1>
+    <p class="lead r-up" data-delay style="--d:0.5s; margin-top:30px;">Una empresa uruguaya que dice "creamos tu futuro", conversando con la oficina que cree que la circularidad es una nueva forma de producir. La misma idea, desde dos lados.</p>
+    <div class="def-foot r-fade" data-delay style="--d:0.8s; text-align:left; margin-top:30px;">Esto es lo que hacemos.</div>
+    <div class="cover-meta r-fade" data-delay style="--d:1s;">
+      <div class="cover-for">Misión Digital · <b>Creamos tu futuro</b> · Montevideo, 2026</div>
+    </div>
+  </div>
+  <div class="data-line whole"><div class="track"></div><div class="lit"></div><div class="node" style="right:0; left:auto;"></div></div>
+</section>
+
+</main>
+
+<div class="chrome">
+  <div class="progress" id="progress"></div>
+  <div class="wordmark"><b>Misión Digital</b> · Creamos tu futuro</div>
+  <div class="counter"><span class="now" id="now">01</span> / 17</div>
+  <nav class="dot-nav" id="dotNav"></nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+  const deck = document.getElementById('deck');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── SCREENSHOT MODE: ?reveal forces all states ── */
+  const revealMode = location.search.includes('reveal');
+  if (revealMode) {
+    const css = document.createElement('style');
+    css.textContent = '.r-up,.r-fade,.r-line{opacity:1!important;transform:none!important}.mask-rows .row>span{transform:none!important}.sig-path{stroke-dashoffset:0!important}.data-line .lit{width:100%!important}.zoom-cell{opacity:1!important;transform:none!important}.stamp{opacity:1!important;transform:none!important}.brow .bc path{stroke-dashoffset:0!important}.slide{content-visibility:visible!important}';
+    document.head.appendChild(css);
+    slides.forEach(s => s.classList.add('in'));
+  }
+
+  /* ── Build dot nav ── */
+  const dotNav = document.getElementById('dotNav');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', s.dataset.label || ('Diapositiva ' + (i + 1)));
+    b.addEventListener('click', () => s.scrollIntoView({ behavior: 'smooth' }));
+    dotNav.appendChild(b);
+  });
+  const dots = Array.from(dotNav.children);
+  const nowEl = document.getElementById('now');
+  const progress = document.getElementById('progress');
+
+  /* ── Build the zoom-out field (slide 10): 60 cells, one is the hero ── */
+  const zf = document.getElementById('zoomField');
+  if (zf) {
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'zoom-cell' + (i === 14 ? ' hero' : '');
+      zf.appendChild(c);
+    }
+  }
+
+  /* ── IntersectionObserver: activate slides + chrome ── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      const i = slides.indexOf(e.target);
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.intersectionRatio > 0.5) {
+          dots.forEach((d, k) => d.classList.toggle('active', k === i));
+          nowEl.textContent = String(i + 1).padStart(2, '0');
+          progress.style.width = ((i) / (total - 1) * 100) + '%';
+          // stagger reduced-motion: nothing; zoom cells stagger handled by CSS + small JS
+        }
+      }
+    });
+  }, { threshold: [0.1, 0.5, 0.9] });
+  slides.forEach(s => io.observe(s));
+
+  // zoom cells: stagger their reveal when slide 10 enters
+  const s10 = document.getElementById('s10');
+  if (s10 && !reduced && !revealMode) {
+    const zio = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          const cells = e.target.querySelectorAll('.zoom-cell');
+          cells.forEach((c, k) => { c.style.transitionDelay = (0.3 + k * 0.012) + 's'; });
+          zio.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    zio.observe(s10);
+  }
+
+  /* ── 60% count-up (slide 12) ── */
+  const bigNum = document.getElementById('bigNum');
+  if (bigNum && !reduced) {
+    let done = false;
+    const cio = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (e.isIntersecting && !done) {
+          done = true;
+          let v = 0; const target = 60;
+          const t = setInterval(() => { v += 2; if (v >= target) { v = target; clearInterval(t); } bigNum.textContent = v + '%'; }, 22);
+        }
+      });
+    }, { threshold: 0.5 });
+    cio.observe(document.getElementById('s12'));
+  }
+
+  /* ── 8-tab interaction (slide 9) ── */
+  const strip = document.getElementById('tabStrip');
+  const panel = document.getElementById('tabPanel');
+  const tpTitle = document.getElementById('tpTitle');
+  const tpBody = document.getElementById('tpBody');
+  const tpSample = document.getElementById('tpSample');
+  const TAB_DATA = {
+    1: ['Cliente', 'Identificación del cliente y la propiedad. La cuenta que da contexto a toda la orden.', 'razón social · contacto · sitio'],
+    2: ['Orden de Trabajo', 'El alcance de la tarea. Qué se va a hacer, dónde y por qué.', 'OT-2026-0418 · alta 13:48'],
+    3: ['Instalación', 'El equipo o activo sobre el que se interviene, con su identidad propia.', 'unidad · serie · ubicación'],
+    4: ['Documentación', 'Fotos, planos y adjuntos que acompañan la intervención.', 'foto · plano · manual'],
+    5: ['Medidas', 'Acá viven los números. Y acá entrarían sus indicadores: consumo, masa de residuo, contenido reciclado, lectura de emisión. La misma ranura que hoy guarda una medición HVAC admite una de circularidad.', 'campo configurable · cursor editable'],
+    6: ['Lista de Verificación', 'El checklist normativo. Cada ítem, marcado y atribuido.', 'norma CO · 12 ítems · 12 OK'],
+    7: ['Intervenciones', 'Lo que efectivamente se hizo, paso a paso, con su sello temporal.', 'acción · 14:02 · J. Suárez'],
+    8: ['Firma', 'El cierre. La rúbrica que vuelve el registro inviolable.', '✓ firmado · 14:03 · 22.05.2026']
+  };
+  let openTab = 5;
+  function setTab(n) {
+    const [t, b, s] = TAB_DATA[n];
+    tpTitle.textContent = t; tpBody.textContent = b; tpSample.textContent = s;
+    strip.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.t == n));
+    panel.classList.add('open');
+    openTab = n;
+  }
+  if (strip) {
+    strip.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => setTab(parseInt(tab.dataset.t, 10)));
+    });
+    setTab(5);
+  }
+
+  /* ── Gobierno node cycle (slide 11) ── */
+  const govNode = document.getElementById('govNode');
+  const govCycle = document.getElementById('govCycle');
+  const GOV = ['Norma CO · Bélgica, hoy', 'Registro MRV nacional', 'Registro de circularidad'];
+  let gi = 0;
+  if (govNode) {
+    govNode.addEventListener('click', () => {
+      gi = (gi + 1) % GOV.length;
+      govCycle.textContent = GOV[gi];
+    });
+  }
+
+  /* ── Keyboard nav ── */
+  window.addEventListener('keydown', (e) => {
+    const idx = slides.findIndex(s => { const r = s.getBoundingClientRect(); return r.top >= -window.innerHeight * 0.5 && r.top < window.innerHeight * 0.5; });
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); if (idx < total - 1) slides[idx + 1].scrollIntoView({ behavior: 'smooth' }); }
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); if (idx > 0) slides[idx - 1].scrollIntoView({ behavior: 'smooth' }); }
+  });
+
+  // first slide active
+  slides[0].classList.add('in');
+  dots[0].classList.add('active');
+})();
+</script>
+</body>
+</html>
