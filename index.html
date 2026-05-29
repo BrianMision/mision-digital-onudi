@@ -322,6 +322,32 @@ img { display: block; max-width: 100%; }
 .close-logo { height: 44px; margin-top: 28px; }
 .close-logo img { height: 100%; width: auto; }
 
+/* ─── Persistent brand lockup (bottom-left) ─── */
+.brandfoot { position: absolute; bottom: 26px; left: 40px; display: flex; align-items: center; gap: 11px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted); }
+.brandfoot img { height: 17px; width: auto; opacity: 0.9; }
+.slide.dark ~ .chrome .brandfoot { color: rgba(255,255,255,0.6); }
+.slide.dark ~ .chrome .brandfoot .blue { display: none; }
+.slide.dark ~ .chrome .brandfoot .white { display: inline !important; }
+
+/* ─── Makkie robot mascot, tasteful per-slide placements ─── */
+.robot { position: absolute; z-index: 3; pointer-events: none; opacity: 0; filter: drop-shadow(0 14px 28px rgba(22,32,46,0.16)); transition: opacity 1.1s var(--ease), transform 1.2s var(--ease-d); }
+.slide.in .robot { opacity: 1; transform: none; }
+.robot.cv { right: 5vw; bottom: 90px; width: clamp(120px, 13vw, 190px); transform: translateY(28px) rotate(2deg); }
+.robot.think { right: 6vw; top: 16vh; width: clamp(110px, 11vw, 168px); transform: translateY(24px); }
+.robot.run { right: 7vw; top: 50%; margin-top: -130px; width: clamp(120px, 12vw, 180px); transform: translateX(30px); }
+.robot.stand { right: 6vw; bottom: 80px; width: clamp(120px, 12vw, 180px); transform: translateY(28px); }
+@media (max-width: 980px) { .robot { display: none; } }
+
+/* ─── Orange accent (≈5%, per maintenanz.com), reserved for small details ─── */
+.tag-plm { display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--heat); margin-bottom: 8px; }
+.tag-plm::before { content: ""; width: 22px; height: 2px; background: var(--heat); }
+.land .ln { color: var(--heat); }
+.offer-list { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 14px; max-width: 60ch; }
+.offer-list li { display: flex; gap: 14px; align-items: baseline; font-size: 17px; line-height: 1.5; color: var(--ink-body); }
+.offer-list li b { font-family: var(--sans-c); font-weight: 600; color: var(--ink); }
+.offer-list li .om { font-family: var(--mono); font-size: 12px; color: var(--cyan-deep); flex: 0 0 auto; width: 22px; }
+.offer-head { font-family: var(--sans-c); font-weight: 600; font-size: clamp(20px,2vw,28px); color: var(--ink); margin-top: 6px; }
+
 /* ════════════════════════════════════════════════════════════════════════
    RESPONSIVE + MOTION
    ════════════════════════════════════════════════════════════════════════ */
@@ -353,6 +379,7 @@ img { display: block; max-width: 100%; }
 
 <!-- 1 · PORTADA -->
 <section class="slide cover" id="s1" data-label="Portada">
+  <img class="robot cv" src="assets/robot-wave.png" alt="Makkie, la mascota de Misión Digital, saludando">
   <div class="slide-inner">
     <div class="cover-logo r-fade"><img src="assets/logo-blue.svg" alt="Misión Digital"></div>
     <div class="kicker r-fade" data-delay style="--d:.15s;">Presentación para ONUDI · Oficina Regional Cono Sur · Montevideo</div>
@@ -405,6 +432,7 @@ img { display: block; max-width: 100%; }
 
 <!-- 4 · EL OBSTÁCULO -->
 <section class="slide alt" id="s4" data-label="El Obstáculo">
+  <img class="robot think" src="assets/robot-think.png" alt="Makkie pensando frente al problema del papel">
   <div class="slide-inner">
     <div class="kicker r-up">El Obstáculo</div>
     <h2 class="h2 r-up" data-delay style="--d:.1s;">Lo que no se puede trazar, no se puede <span class="em">verificar</span>. Lo que no se verifica, no cuenta.</h2>
@@ -426,6 +454,11 @@ img { display: block; max-width: 100%; }
     <div class="kicker r-up">Qué es Misión Digital</div>
     <h1 class="h1 r-up" data-delay style="--d:.1s; font-size:clamp(40px,5.6vw,88px);">La capa de datos<br>que faltaba.</h1>
     <p class="lead r-up" data-delay style="--d:.3s; margin-top:28px;">XPRNZ no es una app de servicio técnico. Es el motor que convierte cada acción de campo en un registro con hora, técnico y firma. Imposible de repetir, posible de auditar.</p>
+    <ul class="offer-list r-up" data-delay style="--d:.42s;">
+      <li><span class="om">01</span><span>Ayudamos a las empresas a <b>digitalizar y organizar sus flujos de trabajo</b>.</span></li>
+      <li><span class="om">02</span><span>Ayudamos a <b>gestionar sus datos</b> de clientes, empleados y trabajos.</span></li>
+      <li><span class="om">03</span><span>Así <b>mejora la eficiencia</b> y se optimizan las tareas, ahorrando tiempo.</span></li>
+    </ul>
     <div class="aside r-fade" data-delay style="--d:.5s;"><span class="lbl">Dicho con claridad</span>No medimos las toneladas de CO2 ni los kilovatios. Capturamos y trazamos el dato que los vuelve verificables.</div>
     <div class="chips">
       <span class="chip r-up" data-delay style="--d:.6s;">Trazabilidad</span>
@@ -442,7 +475,7 @@ img { display: block; max-width: 100%; }
     <div class="kicker r-up">Quiénes Somos</div>
     <h2 class="h2 r-up" data-delay style="--d:.1s;">Una empresa con raíces en tres países y los pies en <span class="em">Uruguay</span>.</h2>
     <div class="cols3">
-      <div class="col r-up" data-delay style="--d:.25s;"><h4>Geografía</h4><ul><li>Países Bajos <span class="yr">2018</span></li><li>Bélgica <span class="yr">2023</span></li><li>Uruguay <span class="yr">2025</span></li></ul></div>
+      <div class="col r-up" data-delay style="--d:.25s;"><h4>Operamos en</h4><ul><li>Países Bajos <span class="yr">2018</span></li><li>Bélgica <span class="yr">2023</span></li><li>Uruguay <span class="yr">2025</span></li></ul></div>
       <div class="col r-up" data-delay style="--d:.4s;"><h4>Industrias actuales</h4><ul><li>Climatización</li><li>Calefacción central</li><li>Norma de CO</li><li>Ventilación</li><li>Tratamiento de agua</li></ul></div>
       <div class="col portfolio r-up" data-delay style="--d:.55s;"><h4>Industrias en expansión</h4><ul><li>Frigoríficos</li><li>Agroindustria</li><li>Automotriz</li><li>Transporte</li><li>Salud</li></ul></div>
     </div>
@@ -455,6 +488,7 @@ img { display: block; max-width: 100%; }
   <div class="slide-inner">
     <div class="kicker r-up">El Sistema</div>
     <h2 class="h2 r-up" data-delay style="--d:.1s;">Dos partes. Un solo dato.</h2>
+    <p class="lead r-up" data-delay style="--d:.18s; margin-bottom:6px;">Ambos programas trabajan juntos, con el fin de brindar comodidad a los trabajadores y al personal de oficina.</p>
     <div class="two">
       <div class="panel r-up" data-delay style="--d:.25s;"><h4>Oficina · web</h4><div class="pt">Gestión de datos, equipos y analítica de trabajos.</div><div class="pd">Donde el registro crudo del campo se vuelve un tablero legible.</div><div class="pl">La capa que leería un asesor de producción más limpia.</div></div>
       <div class="panel r-up" data-delay style="--d:.4s;"><h4>Campo · app móvil</h4><div class="pt">Checklists digitales y órdenes en la mano del técnico.</div><div class="pd">El primer escalón de la Industria 4.0 para una PyME que todavía vive en papel.</div><div class="pl">La rampa de entrada, no el ERP completo.</div></div>
@@ -469,6 +503,12 @@ img { display: block; max-width: 100%; }
     <div class="kicker r-up">La Oficina</div>
     <h2 class="h2 r-up" data-delay style="--d:.1s;">De miles de registros a un <span class="em">indicador</span>.</h2>
     <p class="body r-up" data-delay style="--d:.25s;">La misma acción firmada, multiplicada y agregada, se vuelve un tablero: tiempos, cumplimiento, intervenciones por planta, por equipo, por período.</p>
+    <div class="offer-head r-up" data-delay style="--d:.34s;">El programa de oficina ofrece:</div>
+    <ul class="offer-list r-up" data-delay style="--d:.42s;">
+      <li><span class="om">·</span><span><b>Gestión de Datos</b></span></li>
+      <li><span class="om">·</span><span><b>Gestión de Empleados</b></span></li>
+      <li><span class="om">·</span><span><b>Análisis de Trabajos</b></span></li>
+    </ul>
     <div class="aside r-fade" data-delay style="--d:.45s;"><span class="lbl">El puente al MRV</span>Si entre esos campos vive un dato ambiental (consumo, residuo, material recuperado), el tablero lo agrega igual. La arquitectura no distingue: agrega lo que se le pida medir.</div>
     <div class="chips">
       <span class="chip r-up" data-delay style="--d:.6s;">CSV</span>
@@ -535,10 +575,11 @@ img { display: block; max-width: 100%; }
 
 <!-- 12 · 60% -->
 <section class="slide alt" id="s12" data-label="El Incentivo">
+  <img class="robot run" src="assets/robot-run.png" alt="Makkie en movimiento, ahorro de tiempo">
   <div class="slide-inner" style="text-align:center;">
-    <div class="kicker r-up" style="justify-content:center;">El Incentivo</div>
+    <div class="tag-plm r-up" style="justify-content:center;">Por Lo Menos</div>
     <div class="big-num r-fade" data-delay style="--d:.15s;" id="bigNum">60%</div>
-    <div class="big-sub r-up" data-delay style="--d:.4s;">menos tiempo administrativo</div>
+    <div class="big-sub r-up" data-delay style="--d:.4s;">Ahorro de Tiempo</div>
     <p class="body r-up" data-delay style="--d:.55s; margin:26px auto 0; text-align:center;">Eliminar la transcripción manual y el reproceso devuelve más de la mitad del tiempo de cierre de una orden.</p>
     <div class="aside r-fade" data-delay style="--d:.7s; margin-left:auto; margin-right:auto; text-align:left;"><span class="lbl">Honestamente</span>No es una tonelada de CO2 evitada. Es competitividad de PyME y trabajo humano mejor usado, lo que ONUDI llama eficiencia productiva dentro de la RECP. Y es la zanahoria: la PyME adopta por el tiempo que gana. El dato de sostenibilidad viene de regalo.</div>
   </div>
@@ -603,6 +644,7 @@ img { display: block; max-width: 100%; }
 
 <!-- 17 · EL CIERRE -->
 <section class="slide dark" id="s17" data-label="El Cierre">
+  <img class="robot stand" src="assets/robot-stand.png" alt="Makkie, la mascota de Misión Digital">
   <div class="slide-inner">
     <h1 class="h1 mask-rows">
       <span class="row"><span>Empezó con una firma.</span></span>
@@ -626,6 +668,11 @@ img { display: block; max-width: 100%; }
   </div>
   <div class="counter"><span class="now" id="now">01</span> / 17</div>
   <nav class="dot-nav" id="dotNav"></nav>
+  <div class="brandfoot">
+    <img class="blue" src="assets/logo-blue.svg" alt="">
+    <img class="white" src="assets/logo-white.png" alt="" style="display:none">
+    <span>Creamos tu futuro</span>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
