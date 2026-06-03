@@ -1,2 +1,12 @@
 [build]
   publish = "."
+
+[[redirects]]
+  from = "/en/*"
+  to = "/index-en.html"
+  status = 200
+
+[[redirects]]
+  from = "/en"
+  to = "/index-en.html"
+  status = 200
