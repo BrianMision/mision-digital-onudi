@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#0A0F16" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Maintenanz, Live Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cyan:#00ABE9; --cyan-deep:#0090C8; --blue:#1A465B;
+    --ink:#06364D; --ink-2:#1A465B; --ink-body:#41545F; --ink-muted:#8597A1;
+    --line:#DCEBF4; --line-2:#C7DEEC;
+    --paper:#FFFFFF; --paper-2:#EEF8FD; --paper-3:#E4F2FB;
+    --ok:#1FA138; --ok-bg:#E3F5E7; --warn:#F58817; --warn-bg:#FFF3DA; --bad:#C6371B; --bad-bg:#FBE6E1;
+    --amber:#FFC64C;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --shadow-card:0 1px 2px rgba(10,15,22,.04), 0 6px 20px rgba(10,15,22,.06);
+    --shadow-pop:0 12px 40px rgba(10,15,22,.18);
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --ease-snap:cubic-bezier(.34,1.4,.5,1);
+    --r:16px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; height:100%;}
+  body{
+    font-family:var(--sans); color:var(--ink-body); background:#070B11;
+    font-size:15px; line-height:1.5; overscroll-behavior:none;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+
+  /* ---- Phone shell (for desktop preview; full-bleed on real phones) ---- */
+  .device{
+    position:relative; width:100%; max-width:430px; height:100dvh; max-height:932px;
+    background:var(--paper-2); overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 30px 90px rgba(0,0,0,.5);
+  }
+  @media (min-width:480px){
+    .device{ height:844px; border-radius:38px; border:1px solid #11161f;
+      box-shadow:0 0 0 10px #0c0f15, 0 0 0 11px #20262f, 0 40px 120px rgba(0,0,0,.6); }
+  }
+
+  /* ---- Status / app bar (slim SOLID navy) ---- */
+  .appbar{
+    position:relative; z-index:6; flex:0 0 auto;
+    padding:calc(env(safe-area-inset-top, 0px) + 9px) 16px 9px;
+    background:#06364D; color:#fff;
+  }
+  .brandrow{ display:flex; align-items:center; gap:10px; }
+  .brandlogo{ height:22px; width:auto; display:block; flex:0 0 auto; }
+  .apptitle{ font-family:var(--sans); font-weight:600; font-size:15.5px; letter-spacing:-.01em; color:#fff; line-height:1; }
+
+  /* ---- Onboarding banner (dismissible) ---- */
+  .intro{
+    position:relative; z-index:5; margin:12px 14px 0; padding:13px 14px 13px 14px;
+    background:linear-gradient(120deg,#fff,#F0F8FE); border:1px solid #CDE6F8; border-radius:14px;
+    box-shadow:var(--shadow-card); display:flex; gap:11px; align-items:flex-start;
+    transform-origin:top; transition:opacity .35s var(--ease), transform .35s var(--ease), margin .35s var(--ease), max-height .35s var(--ease), padding .35s var(--ease); max-height:140px;
+  }
+  .intro .ic{ flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+    background:linear-gradient(150deg,var(--cyan),var(--cyan-deep)); color:#fff; box-shadow:0 3px 10px rgba(46,169,230,.35); }
+  .intro p{ margin:0; font-size:12.7px; line-height:1.45; color:var(--ink-2); }
+  .intro p b{ color:var(--cyan-deep); font-weight:600; }
+  .intro .x{ flex:0 0 auto; margin:-3px -3px 0 2px; width:26px; height:26px; border-radius:8px; border:none; background:transparent; color:var(--ink-muted); font-size:18px; cursor:pointer; }
+  .intro.hide{ opacity:0; max-height:0; margin-top:0; padding-top:0; padding-bottom:0; transform:translateY(-6px); pointer-events:none; }
+
+  /* ---- Scroll viewport (panels) ---- */
+  .stage{ flex:1 1 auto; position:relative; overflow:hidden; }
+  .track{ display:flex; height:100%; width:100%; transition:transform .42s var(--ease); will-change:transform; }
+  .track.dragging{ transition:none; }
+  .panel{ flex:0 0 100%; height:100%; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+    padding:14px 14px calc(96px + env(safe-area-inset-bottom,0px)); scrollbar-width:none; }
+  .panel::-webkit-scrollbar{ display:none; }
+
+  /* ---- Cards & shared bits ---- */
+  .card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow-card); margin-bottom:13px; overflow:hidden; }
+  .card-pad{ padding:15px 15px; }
+  .card-h{ display:flex; align-items:center; gap:9px; padding:13px 15px; border-bottom:1px solid var(--line); }
+  .card-h .t{ font-size:11px; font-family:var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--ink-muted); font-weight:500; }
+  .card-h .badge{ margin-left:auto; }
+  .eyebrow{ font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan-deep); font-weight:500; }
+  .panel-title{ font-size:18px; font-weight:600; letter-spacing:-.02em; color:var(--ink); margin:2px 0 14px; }
+  .panel-title .small{ display:block; font-size:11px; font-weight:400; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-muted); font-family:var(--mono); margin-bottom:5px; letter-spacing:.13em;}
+
+  .kv{ display:flex; justify-content:space-between; align-items:center; gap:14px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .kv:last-child{ border-bottom:none; }
+  .kv .k{ font-size:12.5px; color:var(--ink-muted); flex:0 0 auto; }
+  .kv .v{ font-size:14px; color:var(--ink-2); font-weight:500; text-align:right; }
+  .kv .v.mono{ font-family:var(--mono); letter-spacing:.01em; font-weight:500; }
+
+  .chip{ display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.04em; padding:4px 8px; border-radius:7px; text-transform:uppercase; }
+  .chip.ok{ background:var(--ok-bg); color:#157a51; } .chip.warn{ background:var(--warn-bg); color:#9c520f; } .chip.bad{ background:var(--bad-bg); color:#a82a22; }
+  .chip.dot::before{ content:""; width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+  /* ---- Equipment illustration ---- */
+  .rig{ position:relative; height:150px; border-radius:14px; overflow:hidden; margin-bottom:13px;
+    background:radial-gradient(130% 100% at 20% 0%, #14375a 0%, #0c1a2c 55%, #091420 100%); border:1px solid #16324d; }
+  .rig::before{ content:""; position:absolute; inset:0; opacity:.4;
+    background-image:linear-gradient(rgba(46,169,230,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(46,169,230,.16) 1px,transparent 1px); background-size:18px 18px; }
+  .rig svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .rig .tag{ position:absolute; left:12px; bottom:11px; font-family:var(--mono); font-size:10px; letter-spacing:.1em; color:#9fd0f0; background:rgba(8,16,26,.6); border:1px solid rgba(46,169,230,.35); padding:4px 8px; border-radius:7px; backdrop-filter:blur(4px); text-transform:uppercase; z-index:2;}
+  .rig .scan{ position:absolute; left:0; right:0; height:36px; top:-40px; background:linear-gradient(180deg,transparent,rgba(57,217,138,.18),transparent); animation:scan 3.4s var(--ease) infinite; }
+  @keyframes scan{ 0%{top:-40px;} 100%{top:160px;} }
+
+  /* ---- Timeline (History) ---- */
+  .tl{ position:relative; padding-left:8px; }
+  .tl-item{ position:relative; padding:0 0 4px 26px; }
+  .tl-item::before{ content:""; position:absolute; left:6px; top:5px; width:11px; height:11px; border-radius:50%; background:var(--paper); border:2.5px solid var(--cyan); z-index:2; }
+  .tl-item.done::before{ background:var(--cyan); }
+  .tl-item:not(:last-child)::after{ content:""; position:absolute; left:11px; top:14px; bottom:-9px; width:2px; background:linear-gradient(var(--line-2),var(--line)); }
+  .tl-card{ background:var(--paper); border:1px solid var(--line); border-radius:13px; padding:12px 13px; margin-bottom:11px; box-shadow:0 1px 2px rgba(10,15,22,.03); }
+  .tl-top{ display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .tl-date{ font-family:var(--mono); font-size:11px; color:var(--cyan-deep); letter-spacing:.03em; font-weight:500; }
+  .tl-title{ font-size:14px; font-weight:600; color:var(--ink-2); margin:0 0 2px; }
+  .tl-meta{ font-size:12px; color:var(--ink-muted); }
+  .tl-meta .who{ color:var(--ink-body); font-weight:500; }
+
+  /* ---- Checklist ---- */
+  .check{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer; user-select:none; }
+  .check:last-child{ border-bottom:none; }
+  .box{ flex:0 0 auto; width:24px; height:24px; border-radius:7px; border:2px solid var(--line-2); display:grid; place-items:center; transition:all .2s var(--ease-snap); background:var(--paper); }
+  .box svg{ width:14px; height:14px; opacity:0; transform:scale(.4); transition:all .2s var(--ease-snap); color:#fff; }
+  .check.on .box{ background:linear-gradient(150deg,var(--ok),#13855a); border-color:var(--ok); }
+  .check.on .box svg{ opacity:1; transform:scale(1); }
+  .check .lbl{ font-size:14px; color:var(--ink-2); transition:color .2s; }
+  .check.on .lbl{ color:var(--ink-muted); text-decoration:line-through; text-decoration-color:var(--line-2); }
+  .check .req{ margin-left:auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--ink-muted); border:1px solid var(--line-2); padding:2px 6px; border-radius:6px; text-transform:uppercase; }
+  .progwrap{ margin-top:13px; }
+  .progbar{ height:7px; border-radius:99px; background:var(--paper-3); overflow:hidden; }
+  .progfill{ height:100%; border-radius:99px; background:linear-gradient(90deg,var(--cyan),var(--cyan-deep)); width:0; transition:width .45s var(--ease); }
+  .proglabel{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-muted); margin-bottom:7px; font-family:var(--mono); letter-spacing:.02em; }
+
+  /* ---- Measurements ---- */
+  .meas{ display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--line); }
+  .meas:last-child{ border-bottom:none; }
+  .meas .gico{ flex:0 0 auto; width:38px; height:38px; border-radius:11px; display:grid; place-items:center; background:var(--paper-3); color:var(--cyan-deep); }
+  .meas .gico svg{ width:20px; height:20px; }
+  .meas .body{ flex:1 1 auto; min-width:0; }
+  .meas .name{ font-size:13px; color:var(--ink-2); font-weight:500; }
+  .meas .range{ font-size:11px; color:var(--ink-muted); font-family:var(--mono); margin-top:1px; }
+  .meas .read{ text-align:right; flex:0 0 auto; }
+  .meas .num{ font-family:var(--mono); font-size:18px; font-weight:600; color:var(--ink); line-height:1; }
+  .meas .unit{ font-size:11px; color:var(--ink-muted); font-family:var(--mono); }
+
+  /* ---- Sign-off ---- */
+  .sigpad{ position:relative; height:148px; border-radius:13px; background:var(--paper-2); border:1.5px dashed var(--line-2); overflow:hidden; touch-action:none; transition:border-color .3s, background .3s; }
+  .sigpad .hint{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:var(--ink-muted); font-size:12.5px; pointer-events:none; transition:opacity .3s; }
+  .sigpad .hint svg{ width:22px; height:22px; opacity:.55; }
+  .sigpad .baseline{ position:absolute; left:18px; right:18px; bottom:30px; border-bottom:1.5px solid var(--line-2); transition:border-color .3s; }
+  .sigpad .xmark{ position:absolute; left:18px; bottom:32px; font-family:var(--mono); color:var(--ink-muted); font-size:14px; transition:color .3s; }
+  .sigpad canvas{ position:absolute; inset:0; width:100%; height:100%; }
+  .sigpad.has .hint{ opacity:0; }
+  .sigpad.signed{ border-style:solid; border-color:#9cd9b9; background:#F3FBF6; }
+  .sigpad.signed .baseline{ border-color:#9cd9b9; } .sigpad.signed .xmark{ color:#7fc4a2; }
+
+  /* signed credential strip (appears under pad after Sign) */
+  .sigcred{ display:flex; align-items:center; gap:10px; margin-top:13px; padding:11px 13px; border-radius:11px;
+    background:var(--ok-bg); border:1px solid #bfe6c9; overflow:hidden;
+    max-height:0; opacity:0; margin-top:0; padding-top:0; padding-bottom:0; border-width:0;
+    transition:max-height .45s var(--ease), opacity .35s var(--ease), margin .35s var(--ease), padding .35s var(--ease); }
+  .sigcred.show{ max-height:80px; opacity:1; margin-top:13px; padding-top:11px; padding-bottom:11px; border-width:1px; }
+  .sigcred .ck{ flex:0 0 auto; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(150deg,var(--ok),#13855a); color:#fff; box-shadow:0 3px 9px rgba(31,161,56,.3); }
+  .sigcred .ck svg{ width:16px; height:16px; }
+  .sigcred .who{ font-size:13.5px; font-weight:600; color:#157a51; line-height:1.25; }
+  .sigcred .when{ font-size:11px; font-family:var(--mono); color:#3d8f63; letter-spacing:.02em; margin-top:1px; }
+
+  /* primary / secondary action buttons */
+  .actrow{ margin-top:14px; }
+  .btn{ -webkit-appearance:none; appearance:none; cursor:pointer; font-family:var(--sans); border:none;
+    border-radius:12px; font-weight:600; letter-spacing:.005em; display:flex; align-items:center; justify-content:center; gap:9px;
+    transition:transform .12s var(--ease-snap), box-shadow .3s var(--ease), background .3s, opacity .3s; }
+  .btn:active{ transform:scale(.975); }
+  .btn svg{ width:19px; height:19px; }
+  .btn-primary{ width:100%; padding:15px 18px; font-size:15.5px; color:#fff;
+    background:linear-gradient(135deg,var(--cyan),var(--cyan-deep)); box-shadow:0 8px 22px rgba(0,171,233,.32); }
+  .btn-primary:active{ box-shadow:0 4px 12px rgba(0,171,233,.3); }
+  .btn-seal{ width:100%; padding:15px 18px; font-size:15.5px; color:#fff;
+    background:linear-gradient(135deg,#1f9e4f,#147a3c); box-shadow:0 8px 22px rgba(20,120,60,.3); }
+  .btn-ghost{ background:var(--paper); border:1px solid var(--line-2); color:var(--ink-muted);
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:500; padding:10px 16px; border-radius:10px; }
+  .btn-ghost svg{ width:14px; height:14px; }
+  .btn-ghost:active{ background:var(--paper-2); }
+  .btn[disabled]{ opacity:.55; pointer-events:none; }
+
+  /* collapsible wrapper so hidden actions don't take space */
+  .collapse{ max-height:0; opacity:0; overflow:hidden; transition:max-height .45s var(--ease), opacity .35s var(--ease), margin .35s var(--ease); }
+  .collapse.show{ max-height:200px; opacity:1; }
+
+  /* sealed confirmation banner (tidy spacing) */
+  .sealed-card{ position:relative; border-radius:14px; overflow:hidden; padding:18px 17px;
+    background:linear-gradient(135deg,#0d2a1c,#0a3d28 58%,#0c4a30); border:1px solid #1d7a52;
+    box-shadow:0 14px 34px rgba(20,120,80,.28); display:flex; align-items:center; gap:14px; }
+  .sealed-card .ring{ flex:0 0 auto; width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
+    background:#23b87a; border:2px solid #43e09a; color:#fff; box-shadow:0 0 0 6px rgba(67,224,154,.18); }
+  .sealed-card .ring svg{ width:24px; height:24px; }
+  .sealed-card .body{ flex:1 1 auto; min-width:0; }
+  .sealed-card .toprow{ display:flex; align-items:center; gap:9px; }
+  .sealed-card .st{ font-size:15px; font-weight:600; color:#fff; line-height:1.3; }
+  .sealed-card .ss{ font-size:11.5px; font-family:var(--mono); letter-spacing:.01em; color:#9be8c5; margin-top:5px; line-height:1.55; }
+  .sealed-card .lk{ flex:0 0 auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:#bff3da; border:1px solid rgba(67,224,154,.45); background:rgba(67,224,154,.14); padding:4px 8px; border-radius:7px; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:4px; }
+  .sealed-card .lk::before{ content:""; width:5px; height:5px; border-radius:50%; background:#43e09a; }
+
+  /* ---- Reports / distribution ---- */
+  .rep{ padding:13px 14px; border-radius:13px; border:1px solid var(--line); margin-bottom:11px; background:var(--paper); box-shadow:0 1px 2px rgba(10,15,22,.03); }
+  .rep-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .rep-ic{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+  .rep-ic svg{ width:18px; height:18px; }
+  .rep .who{ font-size:14.5px; font-weight:600; color:var(--ink-2); }
+  .rep .role{ font-size:11.5px; color:var(--ink-muted); }
+  .rep .pct{ margin-left:auto; font-family:var(--mono); font-size:15px; font-weight:600; color:var(--ink); }
+  .rbar{ height:6px; border-radius:99px; background:var(--paper-3); overflow:hidden; margin-bottom:9px; }
+  .rbar i{ display:block; height:100%; border-radius:99px; width:0; transition:width .6s var(--ease); }
+  .rfields{ display:flex; flex-wrap:wrap; gap:6px; }
+  .rfields span{ font-size:10.5px; font-family:var(--mono); letter-spacing:.02em; color:var(--ink-body); background:var(--paper-2); border:1px solid var(--line); padding:3px 7px; border-radius:6px; }
+  .rfields span.mut{ color:var(--line-2); border-style:dashed; text-decoration:line-through; }
+
+  .note{ font-size:11.5px; color:var(--ink-muted); line-height:1.5; padding:0 2px; margin-top:2px; }
+  .note b{ color:var(--cyan-deep); font-weight:500; }
+
+  /* ---- Tab bar : XPRNZ super-tabs (top, white bar, sliding cyan indicator) ---- */
+  .tabbar{
+    position:relative; z-index:9; display:flex; align-items:stretch;
+    background:#FFFFFF; box-shadow:2px 2px 10px 0 rgba(0,0,0,.2);
+    overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .tabbar::-webkit-scrollbar{ display:none; }
+  .tab{ flex:0 0 auto; background:none; border:none; cursor:pointer; position:relative;
+    height:48px; min-width:0; padding:0 16px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); font-weight:500; font-size:13px; letter-spacing:.01em;
+    text-transform:uppercase; color:#575756; opacity:.7;
+    white-space:nowrap; transition:opacity .2s, color .2s; }
+  .tab svg{ display:none; }
+  .tab .tl2{ display:block; line-height:48px; }
+  .tab.active{ color:#00ABE9; opacity:1; }
+  /* single sliding indicator (mimics super-tabs translate3d + scaleX) */
+  .tab-ind{ position:absolute; left:0; bottom:0; height:3px; background:#00ABE9;
+    width:100px; transform-origin:0 0; transform:translate3d(0,0,0) scaleX(0);
+    transition:transform .2s ease-in-out; z-index:2; pointer-events:none; }
+
+  .pgdots{ position:absolute; left:0; right:0; bottom:calc(66px + env(safe-area-inset-bottom,0px)); display:flex; justify-content:center; gap:5px; z-index:8; pointer-events:none; }
+  .pgdots i{ width:5px; height:5px; border-radius:50%; background:var(--line-2); transition:all .3s var(--ease); }
+  .pgdots i.on{ width:18px; background:var(--cyan-deep); }
+
+  .reveal > *{ animation:rise .5s var(--ease) both; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none; } }
+
+  .swipehint{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:20; pointer-events:none;
+    background:rgba(10,15,22,.82); color:#dff0fb; font-size:12.5px; padding:10px 16px; border-radius:999px; backdrop-filter:blur(6px);
+    display:flex; align-items:center; gap:8px; opacity:0; font-family:var(--mono); letter-spacing:.03em;}
+  .swipehint.show{ animation:hintfade 2.8s var(--ease) forwards; }
+  @keyframes hintfade{ 0%{opacity:0; transform:translate(-50%,-44%);} 14%{opacity:1; transform:translate(-50%,-50%);} 78%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-56%);} }
+  .swipehint .arr{ animation:nudge 1.1s ease-in-out infinite; }
+  @keyframes nudge{ 0%,100%{transform:translateX(0);} 50%{transform:translateX(4px);} }
+
+  /* ===== XPRNZ light re-skin (pulled from xprnz.maintenanz.com) ===== */
+  body{ background:#DCECF6; }
+  .device{ box-shadow:0 30px 90px rgba(6,54,77,.22); }
+  @media (min-width:480px){ .device{ border-color:#CFE3F1; box-shadow:0 0 0 10px #EAF4FB, 0 0 0 11px #D3E7F3, 0 40px 120px rgba(6,54,77,.18); } }
+  .swipehint{ background:rgba(6,54,77,.92); color:#EAF7FC; }
+  /* ===== fixed top region: slim navy header + XPRNZ super-tab bar ===== */
+  .appbar{ order:0; }
+  .tabbar{ order:1; }
+  .intro{ order:2; }
+  .stage{ order:3; }
+  .panel{ padding-bottom:26px; }
+  .pgdots{ display:none; }
+</style>
+</head>
+<body>
+<div class="device" role="application" aria-label="Maintenanz interactive demo">
+
+  <!-- ===== App bar ===== -->
+  <header class="appbar">
+    <div class="brandrow">
+      <img class="brandlogo" src="assets/logo-white.png" alt="Misión Digital" />
+      <span class="apptitle">AC Unit</span>
+    </div>
+  </header>
+
+  <!-- ===== Onboarding ===== -->
+  <div class="intro" id="intro">
+    <span class="ic" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" stroke="#fff" stroke-width="1.6"/></svg>
+    </span>
+    <p>The same structure works for <b>any asset</b>, an HVAC unit, a herd of cattle, a vehicle fleet. Swipe the tabs to explore one record.</p>
+    <button class="x" id="introX" aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- ===== Stage ===== -->
+  <div class="stage">
+    <div class="track" id="track">
+
+      <!-- 1 · ASSET -->
+      <section class="panel" data-tab="Asset" aria-label="Asset">
+        <div class="rig" aria-hidden="true">
+          <div class="scan"></div>
+          <svg viewBox="0 0 320 150" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="mtl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e7790"/><stop offset="1" stop-color="#39506a"/></linearGradient>
+              <linearGradient id="mtl2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d96b0"/><stop offset="1" stop-color="#48607c"/></linearGradient>
+            </defs>
+            <rect x="92" y="44" width="136" height="74" rx="8" fill="url(#mtl)" stroke="#9fc4e2" stroke-width="1.2"/>
+            <rect x="100" y="52" width="58" height="58" rx="6" fill="#22384f" stroke="#6f9dc2" stroke-width="1"/>
+            <g stroke="#7fb6dd" stroke-width="2" stroke-linecap="round">
+              <circle cx="129" cy="81" r="22" fill="none" opacity=".55"/>
+              <g transform="translate(129,81)"><path d="M0 -19 Q9 -9 0 0 Q-9 9 0 19 M16 -9 Q4 0 16 9 M-16 -9 Q-4 0 -16 9" opacity=".85"/></g>
+            </g>
+            <rect x="168" y="52" width="52" height="26" rx="4" fill="#22384f" stroke="#6f9dc2" stroke-width="1"/>
+            <g fill="#39d98a"><circle cx="178" cy="65" r="2.4"/><circle cx="188" cy="65" r="2.4" fill="#7fb6dd"/><circle cx="198" cy="65" r="2.4" fill="#f0b84a"/></g>
+            <rect x="168" y="84" width="52" height="26" rx="4" fill="url(#mtl2)" stroke="#6f9dc2" stroke-width="1"/>
+            <path d="M174 97h40 M174 90h40 M174 104h40" stroke="#2c4660" stroke-width="2"/>
+            <rect x="120" y="118" width="80" height="9" rx="3" fill="#2a4259"/>
+            <rect x="100" y="36" width="120" height="10" rx="4" fill="#46607c" stroke="#9fc4e2" stroke-width="1"/>
+          </svg>
+          <span class="tag">▣ Scan-linked · QR active</span>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><span class="t">Identity</span><span class="chip ok dot badge">Verified</span></div>
+          <div class="card-pad" style="padding-top:4px;padding-bottom:6px;">
+            <div class="kv"><span class="k">Asset name</span><span class="v">AC Unit</span></div>
+            <div class="kv"><span class="k">Serial number</span><span class="v mono">CH-2208-44719</span></div>
+            <div class="kv"><span class="k">Asset ID / QR</span><span class="v mono">MZ-HVAC-12B</span></div>
+            <div class="kv"><span class="k">Model</span><span class="v">Carrier 30XA · 200 kW</span></div>
+            <div class="kv"><span class="k">Commissioned</span><span class="v mono">2022-03-08</span></div>
+          </div>
+        </div>
+
+        <p class="note"><b>What this saves:</b> one scan opens the full record, no paper, no guesswork, no "which manual was it again?"</p>
+      </section>
+
+      <!-- 2 · HISTORY -->
+      <section class="panel" data-tab="History" aria-label="History">
+        <div class="eyebrow">Service log</div>
+        <h2 class="panel-title">Past visits</h2>
+        <div class="tl">
+          <div class="tl-item done"><div class="tl-card">
+            <div class="tl-top"><span class="tl-date">2026-04-22</span><span class="chip ok dot" style="margin-left:auto;">Passed</span></div>
+            <p class="tl-title">Quarterly preventive service</p>
+            <p class="tl-meta"><span class="who">M. Álvarez</span> · refrigerant top-up, coil clean</p>
+          </div></div>
+          <div class="tl-item done"><div class="tl-card">
+            <div class="tl-top"><span class="tl-date">2026-01-15</span><span class="chip warn dot" style="margin-left:auto;">Follow-up</span></div>
+            <p class="tl-title">Compressor noise, diagnostic</p>
+            <p class="tl-meta"><span class="who">R. Méndez</span> · bearing flagged, monitored</p>
+          </div></div>
+          <div class="tl-item done"><div class="tl-card">
+            <div class="tl-top"><span class="tl-date">2025-10-30</span><span class="chip ok dot" style="margin-left:auto;">Passed</span></div>
+            <p class="tl-title">Quarterly preventive service</p>
+            <p class="tl-meta"><span class="who">M. Álvarez</span> · filters replaced, full check</p>
+          </div></div>
+          <div class="tl-item done"><div class="tl-card">
+            <div class="tl-top"><span class="tl-date">2025-07-12</span><span class="chip ok dot" style="margin-left:auto;">Passed</span></div>
+            <p class="tl-title">Annual certification</p>
+            <p class="tl-meta"><span class="who">Gov. inspector</span> · pressure vessel certified</p>
+          </div></div>
+          <div class="tl-item"><div class="tl-card" style="border-style:dashed;background:var(--paper-2);">
+            <div class="tl-top"><span class="tl-date">2026-06-19</span><span class="chip warn dot" style="margin-left:auto;">In progress</span></div>
+            <p class="tl-title">Quarterly preventive service</p>
+            <p class="tl-meta"><span class="who">You</span> · open work order →</p>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- 3 · WORK ORDER -->
+      <section class="panel" data-tab="Work Order" aria-label="Work Order">
+        <div class="eyebrow">Current job</div>
+        <h2 class="panel-title">Work order #WO-7741</h2>
+        <div class="card">
+          <div class="card-pad" style="padding-top:6px;padding-bottom:6px;">
+            <div class="kv"><span class="k">Equipment</span><span class="v">AC Unit · HVAC-12B</span></div>
+            <div class="kv"><span class="k">Scheduled</span><span class="v mono">2026-06-19 · 09:00</span></div>
+            <div class="kv"><span class="k">Technician</span><span class="v">M. Álvarez</span></div>
+            <div class="kv"><span class="k">Status</span><span class="v"><span class="chip warn dot">In progress</span></span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><span class="t">Checklist · tap to complete</span></div>
+          <div class="card-pad" style="padding-top:2px;">
+            <div class="check on" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Isolate &amp; lock-out power</span><span class="req">safety</span></div>
+            <div class="check on" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Inspect condenser coils</span></div>
+            <div class="check on" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Check refrigerant charge</span></div>
+            <div class="check" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Test safety cut-outs</span></div>
+            <div class="check" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Record measurements</span><span class="req">req</span></div>
+            <div class="progwrap">
+              <div class="proglabel"><span>Completion</span><span id="progTxt">3 / 5</span></div>
+              <div class="progbar"><span class="progfill" id="progFill"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 · MEASUREMENTS -->
+      <section class="panel" data-tab="Measurements" aria-label="Measurements">
+        <div class="eyebrow">Field readings</div>
+        <h2 class="panel-title">Measurements</h2>
+        <div class="card">
+          <div class="card-pad" style="padding-top:6px;padding-bottom:6px;">
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13l3.5-3.5M12 4V2.5M19.5 13H21M3 13H4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <div class="body"><div class="name">Suction pressure</div><div class="range">spec 60–75 psi</div></div>
+              <div class="read"><span class="num">68</span> <span class="unit">psi</span><div style="margin-top:5px;"><span class="chip ok dot">Pass</span></div></div>
+            </div>
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 13l3.5-3.5M12 4V2.5M19.5 13H21M3 13H4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <div class="body"><div class="name">Discharge pressure</div><div class="range">spec 210–250 psi</div></div>
+              <div class="read"><span class="num">232</span> <span class="unit">psi</span><div style="margin-top:5px;"><span class="chip ok dot">Pass</span></div></div>
+            </div>
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4v9.5a4 4 0 1 0 4 0V4a2 2 0 1 0-4 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="8" cy="17" r="1.6" fill="currentColor"/></svg></span>
+              <div class="body"><div class="name">Water flow</div><div class="range">spec ≥ 32 m³/h</div></div>
+              <div class="read"><span class="num">34.6</span> <span class="unit">m³/h</span><div style="margin-top:5px;"><span class="chip ok dot">Pass</span></div></div>
+            </div>
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><path d="M9 4v9.5a4 4 0 1 0 4 0V4a2 2 0 1 0-4 0ZM9 8h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <div class="body"><div class="name">Supply temp</div><div class="range">spec 6–9 °C</div></div>
+              <div class="read"><span class="num">7.1</span> <span class="unit">°C</span><div style="margin-top:5px;"><span class="chip ok dot">Pass</span></div></div>
+            </div>
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><path d="M9 4v9.5a4 4 0 1 0 4 0V4a2 2 0 1 0-4 0ZM9 8h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <div class="body"><div class="name">Return temp</div><div class="range">spec ≤ 14 °C</div></div>
+              <div class="read"><span class="num">12.4</span> <span class="unit">°C</span><div style="margin-top:5px;"><span class="chip ok dot">Pass</span></div></div>
+            </div>
+            <div class="meas">
+              <span class="gico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 14l4-4 4 3 5-7 5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <div class="body"><div class="name">Compressor draw</div><div class="range">spec ≤ 92 A</div></div>
+              <div class="read"><span class="num">88</span> <span class="unit">A</span><div style="margin-top:5px;"><span class="chip warn dot">Watch</span></div></div>
+            </div>
+          </div>
+        </div>
+        <p class="note">Every reading is checked against its <b>spec range</b> automatically, pass/fail is captured, not judged on the spot.</p>
+      </section>
+
+      <!-- 5 · SIGN-OFF -->
+      <section class="panel" data-tab="Sign-off" aria-label="Sign-off">
+        <div class="eyebrow">Approval</div>
+        <h2 class="panel-title">Sign &amp; seal</h2>
+        <div class="card">
+          <div class="card-h"><span class="t">Technician signature</span><span class="chip warn dot badge" id="sigChip">Awaiting</span></div>
+          <div class="card-pad">
+            <div class="sigpad" id="sigpad">
+              <div class="baseline"></div><span class="xmark">✕</span>
+              <div class="hint" id="sigHint">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 17.5c2.5-1 3.7-9 5.2-9 1.3 0 .6 6.5 1.9 6.5 1.1 0 1.8-8.5 3.3-8.5 1.2 0 .9 7 2 7 .9 0 1.6-2.5 2.6-2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20.5h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/></svg>
+                <span>Sign here</span>
+              </div>
+              <canvas id="sigcanvas"></canvas>
+            </div>
+
+            <!-- signed credential strip (revealed after Sign) -->
+            <div class="sigcred" id="sigCred">
+              <span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <div>
+                <div class="who">M. Álvarez · Tech #221</div>
+                <div class="when" id="sigWhen">Signed · 2026-06-19 11:42</div>
+              </div>
+            </div>
+
+            <!-- primary Sign button -->
+            <div class="actrow" id="signRow">
+              <button class="btn btn-primary" id="signBtn">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5l3.6-.7L18 8.4a2 2 0 0 0 0-2.8l-.6-.6a2 2 0 0 0-2.8 0L4.2 15.4 3.5 19a.4.4 0 0 0 .5.5Z" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 7l4 4" stroke="#fff" stroke-width="1.7"/></svg>
+                <span id="signBtnTxt">Sign</span>
+              </button>
+            </div>
+
+            <!-- sign-again affordance (revealed after Sign) -->
+            <div class="actrow collapse" id="againRow" style="display:flex;justify-content:center;">
+              <button class="btn btn-ghost" id="signAgain">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.5 9A8 8 0 0 0 6 6.3L4 9M4.5 15A8 8 0 0 0 18 17.7L20 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Sign again
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seal & send (revealed after Sign) -->
+        <div class="collapse" id="sealRow" style="margin-bottom:13px;">
+          <button class="btn btn-seal" id="sealBtn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><rect x="5" y="11" width="14" height="9.5" rx="2.4" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="15.5" r="1.4" fill="#fff"/></svg>
+            Seal &amp; send
+          </button>
+        </div>
+
+        <!-- sealed confirmation (revealed after Seal) -->
+        <div class="collapse" id="sealedRow">
+          <div class="sealed-card">
+            <span class="ring"><svg viewBox="0 0 24 24" fill="none"><path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="5" y="11" width="14" height="9.5" rx="2.4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg></span>
+            <div class="body">
+              <div class="toprow"><span class="st">Sealed &amp; approved</span><span class="lk">Locked</span></div>
+              <div class="ss">Locked &amp; timestamped · 2026-06-19 11:42 · M. Álvarez</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="note" style="margin-top:13px;">Once sealed, the record is <b>locked &amp; timestamped</b>, and the right reports go out automatically.</p>
+      </section>
+
+      <!-- 6 · REPORTS -->
+      <section class="panel" data-tab="Reports" aria-label="Reports">
+        <div class="eyebrow">Distribution</div>
+        <h2 class="panel-title">Who receives what</h2>
+
+        <div class="rep">
+          <div class="rep-top">
+            <span class="rep-ic" style="background:linear-gradient(150deg,var(--blue),#16406f);"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="1.7"/><path d="M8 9h8M8 13h8M8 17h5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <span><div class="who">Office</div><div class="role">Owner · full record</div></span>
+            <span class="pct">100%</span>
+          </div>
+          <div class="rbar"><i style="background:linear-gradient(90deg,var(--blue),var(--cyan-deep));" data-w="100"></i></div>
+          <div class="rfields"><span>Identity</span><span>History</span><span>Work order</span><span>Measurements</span><span>Sign-off</span><span>Photos</span></div>
+        </div>
+
+        <div class="rep">
+          <div class="rep-top">
+            <span class="rep-ic" style="background:linear-gradient(150deg,#2b7a4f,#155a36);"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9.5 12 4l8 5.5M5 9.5V19h14V9.5M9 19v-5h6v5" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+            <span><div class="who">Government</div><div class="role">Regulator · compliance subset</div></span>
+            <span class="pct">40%</span>
+          </div>
+          <div class="rbar"><i style="background:linear-gradient(90deg,#2b7a4f,#39b06f);" data-w="40"></i></div>
+          <div class="rfields"><span>Identity</span><span>Certification</span><span>Measurements</span><span class="mut">Pricing</span><span class="mut">Customer notes</span></div>
+        </div>
+
+        <div class="rep">
+          <div class="rep-top">
+            <span class="rep-ic" style="background:linear-gradient(150deg,var(--cyan),var(--cyan-deep));"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="#fff" stroke-width="1.7"/><path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <span><div class="who">Client</div><div class="role">Service summary</div></span>
+            <span class="pct">55%</span>
+          </div>
+          <div class="rbar"><i style="background:linear-gradient(90deg,var(--cyan),var(--cyan-deep));" data-w="55"></i></div>
+          <div class="rfields"><span>Visit date</span><span>Status: Passed</span><span>Next service</span><span class="mut">Raw readings</span><span class="mut">Internal cost</span></div>
+        </div>
+
+        <p class="note">One sealed record → <b>three tailored reports</b>. Each audience sees exactly what it should, and nothing it shouldn't.</p>
+      </section>
+
+    </div>
+
+    <div class="swipehint" id="swipehint"><span>Swipe to explore</span><span class="arr">→</span></div>
+    <div class="pgdots" id="pgdots"></div>
+  </div>
+
+  <!-- ===== Tab bar : XPRNZ super-tabs ===== -->
+  <nav class="tabbar" id="tabbar" role="tablist">
+    <button class="tab active" role="tab"><span class="tl2">Asset</span></button>
+    <button class="tab" role="tab"><span class="tl2">History</span></button>
+    <button class="tab" role="tab"><span class="tl2">Work Order</span></button>
+    <button class="tab" role="tab"><span class="tl2">Measure</span></button>
+    <button class="tab" role="tab"><span class="tl2">Sign-off</span></button>
+    <button class="tab" role="tab"><span class="tl2">Reports</span></button>
+    <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
+  </nav>
+</div>
+
+<script>
+(function(){
+  var track=document.getElementById('track');
+  var panels=[].slice.call(track.children).filter(function(n){return n.classList.contains('panel');});
+  var tabbar=document.getElementById('tabbar');
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var tabInd=document.getElementById('tabInd');
+  var dotsWrap=document.getElementById('pgdots');
+  var N=panels.length, cur=0;
+
+  // page dots
+  for(var i=0;i<N;i++){ var d=document.createElement('i'); if(i===0)d.className='on'; dotsWrap.appendChild(d); }
+  var dots=[].slice.call(dotsWrap.children);
+
+  function vibrate(ms){ if(navigator.vibrate){ try{navigator.vibrate(ms);}catch(e){} } }
+
+  // slide the cyan indicator under the active tab (super-tabs translate3d + scaleX)
+  function moveIndicator(n, animate){
+    var at=tabs[n]; if(!at||!tabInd)return;
+    var x=at.offsetLeft, w=at.offsetWidth;
+    tabInd.style.transition = animate===false ? 'none' : '';
+    tabInd.style.transform='translate3d('+x+'px,0,0) scaleX('+(w/100)+')';
+    if(animate===false){ void tabInd.offsetWidth; tabInd.style.transition=''; }
+    // keep active tab in view if the bar scrolls
+    var br=tabbar.getBoundingClientRect(), tr=at.getBoundingClientRect();
+    var target=tabbar.scrollLeft + (tr.left - br.left) - (br.width/2 - tr.width/2);
+    tabbar.scrollTo({left:Math.max(0,target), behavior: animate===false ? 'auto' : 'smooth'});
+  }
+
+  function go(n, animate){
+    n=Math.max(0,Math.min(N-1,n));
+    cur=n;
+    track.style.transition = animate===false ? 'none' : '';
+    track.style.transform='translateX('+(-n*100)+'%)';
+    tabs.forEach(function(t,i){ t.classList.toggle('active', i===n); });
+    dots.forEach(function(d,i){ d.classList.toggle('on', i===n); });
+    moveIndicator(n, animate);
+    var p=panels[n];
+    p.classList.remove('reveal'); void p.offsetWidth; p.classList.add('reveal');
+    p.scrollTop=0;
+  }
+
+  tabs.forEach(function(t,i){ t.addEventListener('click', function(){ if(i!==cur)vibrate(8); go(i); }); });
+
+  // ---- swipe ----
+  var x0=null,y0=null,dx=0,locked=null,w=0;
+  function start(e){ var t=e.touches?e.touches[0]:e; x0=t.clientX; y0=t.clientY; dx=0; locked=null; w=track.clientWidth; track.classList.add('dragging'); }
+  function move(e){
+    if(x0===null)return; var t=e.touches?e.touches[0]:e;
+    var mx=t.clientX-x0, my=t.clientY-y0;
+    if(locked===null){ if(Math.abs(mx)>8||Math.abs(my)>8) locked=Math.abs(mx)>Math.abs(my)?'x':'y'; }
+    if(locked!=='x')return;
+    if(e.cancelable)e.preventDefault();
+    dx=mx;
+    var res=dx; if((cur===0&&dx>0)||(cur===N-1&&dx<0)) res=dx*0.32; // rubber-band edges
+    track.style.transform='translateX('+(-cur*100 + res/w*100)+'%)';
+  }
+  function end(){
+    if(x0===null)return; track.classList.remove('dragging');
+    if(locked==='x'){
+      var th=w*0.18;
+      if(dx<-th&&cur<N-1){ vibrate(8); go(cur+1); }
+      else if(dx>th&&cur>0){ vibrate(8); go(cur-1); }
+      else go(cur);
+    }
+    x0=y0=null; locked=null; dx=0;
+  }
+  var stage=document.querySelector('.stage');
+  stage.addEventListener('touchstart',start,{passive:true});
+  stage.addEventListener('touchmove',move,{passive:false});
+  stage.addEventListener('touchend',end);
+  stage.addEventListener('touchcancel',end);
+  // mouse drag (desktop preview)
+  stage.addEventListener('mousedown',function(e){ if(e.target.closest('.check,.seal,.sigpad,button'))return; start(e); var mm=function(ev){move(ev);},mu=function(){end();document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);}; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu); });
+
+  // keyboard
+  window.addEventListener('keydown',function(e){ if(e.key==='ArrowRight')go(cur+1); if(e.key==='ArrowLeft')go(cur-1); });
+
+  // ---- intro dismiss ----
+  var intro=document.getElementById('intro');
+  document.getElementById('introX').addEventListener('click',function(){ intro.classList.add('hide'); });
+
+  // ---- swipe hint (once) ----
+  setTimeout(function(){ document.getElementById('swipehint').classList.add('show'); },900);
+
+  // ---- checklist ----
+  var checks=[].slice.call(document.querySelectorAll('[data-chk]'));
+  var fill=document.getElementById('progFill'), ptxt=document.getElementById('progTxt');
+  function syncProg(){ var done=checks.filter(function(c){return c.classList.contains('on');}).length;
+    fill.style.width=(done/checks.length*100)+'%'; ptxt.textContent=done+' / '+checks.length; }
+  checks.forEach(function(c){ c.addEventListener('click',function(){ c.classList.toggle('on'); vibrate(8); syncProg(); }); });
+  syncProg(); setTimeout(syncProg,150);
+
+  // ---- report bars fill on first view ----
+  var repSeen=false;
+  function fillReports(){ if(repSeen)return; repSeen=true; [].slice.call(document.querySelectorAll('.rbar i')).forEach(function(b){ b.style.width=b.getAttribute('data-w')+'%'; }); }
+
+  // observe panel into view -> fill reports
+  var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting && en.target.getAttribute('data-tab')==='Reports') fillReports(); }); },{root:stage,threshold:.4});
+  panels.forEach(function(p){ io.observe(p); });
+
+  // ---- signature pad ----
+  var pad=document.getElementById('sigpad'), cvs=document.getElementById('sigcanvas');
+  var ctx=cvs.getContext('2d'), drawing=false, hasInk=false, last=null;
+  var signed=false, animating=false;
+  var sigChip=document.getElementById('sigChip');
+  var signBtn=document.getElementById('signBtn'), signBtnTxt=document.getElementById('signBtnTxt');
+  var sigCred=document.getElementById('sigCred'), signRow=document.getElementById('signRow');
+  var againRow=document.getElementById('againRow'), sealRow=document.getElementById('sealRow'), sealedRow=document.getElementById('sealedRow');
+
+  function sizeCanvas(){ var r=cvs.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+    cvs.width=r.width*dpr; cvs.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.lineWidth=2.6; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#163b5e'; }
+  function pt(e){ var t=e.touches?e.touches[0]:e, r=cvs.getBoundingClientRect(); return {x:t.clientX-r.left,y:t.clientY-r.top}; }
+  function dStart(e){ if(signed||animating)return; drawing=true; last=pt(e); if(e.cancelable)e.preventDefault(); }
+  function dMove(e){ if(!drawing||signed||animating)return; var p=pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p;
+    if(!hasInk){ hasInk=true; pad.classList.add('has'); signBtnTxt.textContent='Sign'; } if(e.cancelable)e.preventDefault(); }
+  function dEnd(){ drawing=false; }
+  pad.addEventListener('touchstart',dStart,{passive:false}); pad.addEventListener('touchmove',dMove,{passive:false}); pad.addEventListener('touchend',dEnd);
+  pad.addEventListener('mousedown',dStart); window.addEventListener('mousemove',function(e){ if(drawing)dMove(e); }); window.addEventListener('mouseup',dEnd);
+  setTimeout(sizeCanvas,300);
+
+  // animate a realistic signature stroke into the pad (used when Sign tapped on empty pad)
+  function sigPoint(t,W,H){
+    var bx=W*0.16, by=H*0.58, sx=W*0.62, sy=H*0.34;
+    var x=bx + t*sx;
+    var y=by - Math.sin(t*Math.PI*2.4)*sy*0.5 - Math.sin(t*Math.PI*5.1)*sy*0.16 + (t>0.5?(t-0.5)*sy*0.4:0);
+    return {x:x,y:y};
+  }
+  function animateSignature(done){
+    animating=true;
+    var r=cvs.getBoundingClientRect(), W=r.width, H=r.height;
+    pad.classList.add('has');
+    var DUR=900, t0=null, prev=sigPoint(0,W,H), finished=false;
+    function finish(){ if(finished)return; finished=true; animating=false; hasInk=true; if(done)done(); }
+    function step(ts){
+      if(t0===null) t0=ts;
+      var p=Math.min(1,(ts-t0)/DUR);
+      var cur=sigPoint(p,W,H);
+      ctx.beginPath(); ctx.moveTo(prev.x,prev.y); ctx.lineTo(cur.x,cur.y); ctx.stroke();
+      prev=cur;
+      if(p<1){ requestAnimationFrame(step); } else { finish(); }
+    }
+    requestAnimationFrame(step);
+    // safety: guarantee completion even if rAF is throttled (e.g. headless/background)
+    setTimeout(finish, DUR+300);
+  }
+
+  function commitSigned(){
+    signed=true;
+    pad.classList.add('signed');
+    sigChip.textContent='Signed'; sigChip.className='chip ok dot badge';
+    // hide Sign button, reveal credential + seal + sign-again
+    signRow.style.display='none';
+    sigCred.classList.add('show');
+    sealRow.classList.add('show');
+    againRow.classList.add('show');
+    vibrate([8,24,10]);
+  }
+
+  signBtn.addEventListener('click',function(){
+    if(signed||animating)return;
+    if(hasInk){ commitSigned(); }
+    else { vibrate(8); signBtnTxt.textContent='Signing…'; animateSignature(function(){ commitSigned(); }); }
+  });
+
+  function resetSign(){
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    hasInk=false; signed=false; animating=false;
+    pad.classList.remove('has','signed');
+    sigChip.textContent='Awaiting'; sigChip.className='chip warn dot badge';
+    signBtnTxt.textContent='Sign';
+    signRow.style.display='';
+    sigCred.classList.remove('show');
+    againRow.classList.remove('show');
+    sealRow.classList.remove('show');
+    sealedRow.classList.remove('show');
+    vibrate(8);
+  }
+  document.getElementById('signAgain').addEventListener('click',resetSign);
+
+  // ---- seal & send ----
+  var sealed=false;
+  document.getElementById('sealBtn').addEventListener('click',function(){
+    if(sealed)return; sealed=true;
+    sealRow.classList.remove('show');     // collapse the Seal & send button
+    sealedRow.classList.add('show');      // reveal sealed confirmation
+    vibrate([10,30,14]);
+  });
+
+  window.addEventListener('resize',function(){ var snap=cvs.toDataURL(); sizeCanvas(); var im=new Image(); im.onload=function(){ var r=cvs.getBoundingClientRect(); ctx.drawImage(im,0,0,r.width,r.height); }; im.src=snap; moveIndicator(cur,false); });
+
+  go(0,false);
+  // re-align indicator once layout/fonts settle
+  requestAnimationFrame(function(){ moveIndicator(cur,false); });
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(function(){ moveIndicator(cur,false); }); }
+  window.addEventListener('load',function(){ moveIndicator(cur,false); });
+})();
+</script>
+</body>
+</html>
